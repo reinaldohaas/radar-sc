@@ -39,8 +39,8 @@ footer { max-width: 1200px; margin: 0 auto; padding: 16px 16px 32px; color: var(
   <h1>Radar SC, últimas 6 horas</h1>
   <p>MaxCAPPI dos radares do DECEA (REDEMET), como veio. Abre no quadro mais recente.</p>
 </header>
-<main><p class="vazio">Nenhuma imagem ainda. Rode <code>python baixar_recentes.py</code>.</p></main>
-<footer>Atualizado em 19/11/2026 19:44 local (22:44 UTC). Fonte: REDEMET/DECEA.</footer>
+<main><figure class="cartao"><div class="vazio">Nenhum quadro baixado.</div><figcaption><h2>Morro da Igreja, Urubici (SC) · MAXCAPPI</h2></figcaption></figure><figure class="cartao"><div class="vazio">Nenhum quadro baixado.</div><figcaption><h2>Santiago (RS) · MAXCAPPI</h2></figcaption></figure></main>
+<footer>Atualizado em 19/11/2026 19:45 local (22:45 UTC). Fonte: REDEMET/DECEA.</footer>
 <script>
 document.querySelectorAll('.laco').forEach(fig => {
   const q = JSON.parse(fig.dataset.quadros), img = fig.querySelector('img'), faixa = fig.querySelector('input'),
