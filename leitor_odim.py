@@ -16,6 +16,18 @@ def _txt(v):
 
 
 RHOHV_MIN = 0.8
+JANELA_RAIOS, JANELA_KM = 3, 1.0  # suavização do RhoHV antes do limiar
+
+
+def _suavizar(rho, rscale_km):
+    """Média do RhoHV em janela de JANELA_RAIOS raios x JANELA_KM, ignorando gates sem dado (azimute cíclico)."""
+    from scipy.ndimage import uniform_filter
+    nb = max(1, int(round(JANELA_KM / rscale_km)))
+    ok = np.isfinite(rho)
+    soma = uniform_filter(np.where(ok, rho, 0.0), size=(JANELA_RAIOS, nb), mode=("wrap", "nearest"))
+    peso = uniform_filter(ok.astype(np.float32), size=(JANELA_RAIOS, nb), mode=("wrap", "nearest"))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.where(peso > 0, soma / peso, np.nan)
 
 
 def _fisico(g):
@@ -26,8 +38,10 @@ def _fisico(g):
     return fis
 
 
-def ler_volume_odim(caminho, quantidades=PREFERIDAS, th_rhohv=True):
+def ler_volume_odim(caminho, quantidades=PREFERIDAS, th_rhohv=True, mascara="suave"):
     """th_rhohv=True: usa a refletividade bruta (TH) e retira os gates com RhoHV < 0,8.
+    mascara="suave" aplica o limiar ao RhoHV médio de 3 raios x 1 km; "ponto" aplica gate a gate.
+    Gate a gate, o limiar retalha a imagem em faixas radiais, porque o RhoHV de cada gate é ruidoso.
 
     Em Araranguá, o filtro de clutter Doppler que gera o DBZH apaga raios inteiros de chuva, porque a PRF
     baixa (400/267 Hz em banda X) deixa a velocidade e o SQI sem sentido. O RhoHV não depende do Doppler:
@@ -42,11 +56,10 @@ def ler_volume_odim(caminho, quantidades=PREFERIDAS, th_rhohv=True):
             ds = h[nome]
             w = ds["where"].attrs
             dados = {_txt(ds[d]["what"].attrs["quantity"]): ds[d] for d in ds if d.startswith("data")}
-            if th_rhohv and "TH" in dados and "RHOHV" in dados:
-                q = f"TH, RhoHV ≥ {RHOHV_MIN:.1f}"
-                fis = _fisico(dados["TH"])
-                rho = _fisico(dados["RHOHV"])
-                fis[~(rho >= RHOHV_MIN)] = np.nan
+            usar_rho = th_rhohv and "TH" in dados and "RHOHV" in dados
+            if usar_rho:
+                q = f"TH, RhoHV{' médio' if mascara == 'suave' else ''} ≥ {RHOHV_MIN:.1f}"
+                fis, rho = _fisico(dados["TH"]), _fisico(dados["RHOHV"])
             else:
                 q = next((q for q in quantidades if q in dados), None)
                 if q is None:
@@ -62,6 +75,13 @@ def ler_volume_odim(caminho, quantidades=PREFERIDAS, th_rhohv=True):
                 az = (np.arange(nr) + 0.5) * 360.0 / nr
             ordem = np.argsort(az)
             rscale_km = float(w["rscale"]) / 1000.0
+            if usar_rho:
+                rho = rho[ordem]
+                if mascara == "suave":
+                    rho = _suavizar(rho, rscale_km)
+                fis, az = fis[ordem], az[ordem]
+                fis[~(rho >= RHOHV_MIN)] = np.nan
+                ordem = np.arange(len(ordem))  # já ordenado
             ranges = float(w.get("rstart", 0.0)) + (np.arange(int(w["nbins"]), dtype=np.float32) + 0.5) * rscale_km
             fatias.append({"ele_deg": float(w["elangle"]), "azimuths": az[ordem], "ranges_km": ranges,
                            "data": fis[ordem], "quantity": q})

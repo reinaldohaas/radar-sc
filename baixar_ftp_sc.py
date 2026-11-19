@@ -108,17 +108,22 @@ def arvore(ftp,pasta="/", prof=0, saida=None, max_prof=3):
         print(f"Estrutura gravada em {AQUI / 'ftp_arvore.txt'}")
 
 
-def amostra(ftp, sigla):
-    """Baixa o arquivo mais recente de /SIGLA/HDF5 e grava a árvore HDF (grupos, datasets, atributos)."""
+def amostra(ftp, sigla, quantas=1):
+    """Baixa `quantas` arquivos de /SIGLA/HDF5, espalhados por todo o histórico do FTP (o último é o mais recente),
+    e grava a árvore HDF (grupos, datasets, atributos) do mais recente."""
     import h5py
     import numpy as np
     nomes = sorted(n for n, d in listar(ftp, f"/{sigla}/HDF5") if not d)
     if not nomes:
         raise SystemExit(f"/{sigla}/HDF5 está vazia")
-    destino = AQUI / "amostras" / sigla / nomes[-1]  # fora do cache: o fluxo normal apaga o que está em cache_vol
-    destino.parent.mkdir(parents=True, exist_ok=True)
-    with open(destino, "wb") as f:
-        ftp.retrbinary(f"RETR /{sigla}/HDF5/{nomes[-1]}", f.write)
+    idx = sorted({round(i) for i in np.linspace(0, len(nomes) - 1, max(quantas, 1))}) if quantas > 1 else [len(nomes) - 1]
+    for i in idx:
+        destino = AQUI / "amostras" / sigla / nomes[i]  # fora do cache: o fluxo normal apaga o que está em cache_vol
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        if not destino.exists():
+            with open(destino, "wb") as f:
+                ftp.retrbinary(f"RETR /{sigla}/HDF5/{nomes[i]}", f.write)
+        print(f"  {nomes[i]}", flush=True)
     linhas = [f"arquivo: {nomes[-1]} ({destino.stat().st_size} bytes)"]
 
     def attrs(obj, ind):
@@ -178,11 +183,14 @@ def main():
     ap.add_argument("--horas", type=float, default=6)
     ap.add_argument("--radares", nargs="+", help="siglas do FTP (padrão: todas as pastas com VOL ou HDF5)")
     ap.add_argument("--alcance", type=float, default=250, help="raio da imagem em km")
+    ap.add_argument("--refazer", action="store_true", help="redesenha também os quadros que já têm imagem")
     ap.add_argument("--listar", action="store_true", help="só lista radares e o último volume de cada")
     ap.add_argument("--arvore", action="store_true",
                     help="grava ftp_arvore.txt com as pastas do servidor e alguns arquivos de cada (diagnóstico)")
     ap.add_argument("--amostra", metavar="SIGLA",
                     help="baixa o HDF mais recente de /SIGLA/HDF5 e descreve sua estrutura em amostra_SIGLA.txt")
+    ap.add_argument("--quantas", type=int, default=1,
+                    help="com --amostra: quantos arquivos, espalhados pelo histórico do FTP (ex.: 6)")
     a = ap.parse_args()
 
     host, user, senha = credenciais()
@@ -195,7 +203,7 @@ def main():
             arvore(ftp)
             return
         if a.amostra:
-            amostra(ftp, a.amostra.upper())
+            amostra(ftp, a.amostra.upper(), a.quantas)
             return
         radares = radares_no_ftp(ftp, {r.upper() for r in a.radares} if a.radares else None)
         print(f"Radares: {', '.join(f'{s}/{sub}' for s, sub in radares) or 'nenhum'}")
@@ -216,7 +224,7 @@ def main():
             for i, (t, nome) in enumerate(alvos, 1):
                 png = pasta / f"{t:%Y%m%d_%H%M%S}.png"
                 try:
-                    if not png.exists():
+                    if a.refazer or not png.exists():
                         vol = baixar(ftp, s, sub, nome)
                         desenhar(vol, png, f"{NOMES.get(s, s)} ({s})", t, a.alcance)
                         vol.unlink()  # a imagem basta; o volume bruto ocupa até 26 MB
