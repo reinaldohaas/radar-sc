@@ -1,19 +1,5 @@
-# Produtos de terceiros (REDEMET/DECEA, capturas de tela) e figuras da 1ª versão, superadas
-imagens/_privado/
-completo.html
-
-# Credenciais e dados brutos
+# Chave da API REDEMET
 .env
-radar/baixar_ftp_chapeco.py
-radar/baixar_sdc_ftp.py
-radar/dados_chp_vol/
-radar/dados_osm/
-radar/mi/
-radar/sg/
-radar/figuras/
 
 __pycache__/
 *.pyc
-
-# Imagens recentes da REDEMET (terceiros)
-recentes/

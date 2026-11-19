@@ -3,154 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Radar de Chapecó</title>
-<meta name="description" content="Galeria das imagens de radar do evento de vento forte em Chapecó, 04/11/2026.">
+<title>Radar SC, últimas 6 horas</title>
 <style>
-:root {
-  --fundo: #f6f7f9; --superficie: #ffffff; --texto: #1b1f24; --suave: #5b6470; --borda: #dde1e6;
-  --destaque: #0b6bcb; --terceiros: #9a5b00; --terceiros-fundo: #fff1dc; --anterior: #7a3e9d; --anterior-fundo: #f3e8fa;
-  --quadro: #0e1116;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --fundo: #0e1116; --superficie: #171b21; --texto: #e6e9ed; --suave: #9aa4b0; --borda: #2a3038;
-    --destaque: #5aa9ff; --terceiros: #ffc46b; --terceiros-fundo: #3a2a10; --anterior: #d6a6f2; --anterior-fundo: #2e1e3a;
-  }
-}
-:root[data-theme="dark"] {
-  --fundo: #0e1116; --superficie: #171b21; --texto: #e6e9ed; --suave: #9aa4b0; --borda: #2a3038;
-  --destaque: #5aa9ff; --terceiros: #ffc46b; --terceiros-fundo: #3a2a10; --anterior: #d6a6f2; --anterior-fundo: #2e1e3a;
-}
+:root { --fundo: #f6f7f9; --superficie: #fff; --texto: #1b1f24; --suave: #5b6470; --borda: #dde1e6;
+  --destaque: #0b6bcb; --quadro: #0e1116; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fundo: #0e1116; --superficie: #171b21;
+  --texto: #e6e9ed; --suave: #9aa4b0; --borda: #2a3038; --destaque: #5aa9ff; } }
+:root[data-theme="dark"] { --fundo: #0e1116; --superficie: #171b21; --texto: #e6e9ed; --suave: #9aa4b0;
+  --borda: #2a3038; --destaque: #5aa9ff; }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 64px; }
-body { margin: 0; background: var(--fundo); color: var(--texto);
-  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-a { color: var(--destaque); }
-header { max-width: 1200px; margin: 0 auto; padding: 40px 16px 16px; }
-header h1 { margin: 0 0 8px; font-size: clamp(1.6rem, 4vw, 2.3rem); letter-spacing: -0.01em; }
-header p { margin: 0; color: var(--suave); max-width: 72ch; }
-nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--fundo) 90%, transparent);
-  backdrop-filter: blur(6px); border-bottom: 1px solid var(--borda); }
-nav div { max-width: 1200px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 18px; overflow-x: auto;
-  white-space: nowrap; font-size: 0.92rem; }
-nav a { text-decoration: none; color: var(--suave); }
-nav a:hover { color: var(--texto); }
-main { max-width: 1200px; margin: 0 auto; padding: 0 16px 48px; }
-section { padding-top: 32px; }
-h2 { font-size: 1.35rem; margin: 0 0 4px; }
-.intro { margin: 0 0 18px; color: var(--suave); max-width: 80ch; }
-.aviso { margin: 16px 0 0; padding: 10px 14px; border-radius: 8px; background: var(--terceiros-fundo);
-  color: var(--terceiros); max-width: 80ch; }
-.grade { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
-.cartao { margin: 0; background: var(--superficie); border: 1px solid var(--borda); border-radius: 10px;
-  overflow: hidden; display: flex; flex-direction: column; }
-.cartao.largo { grid-column: 1 / -1; }
-.abrir { all: unset; cursor: zoom-in; display: block; background: var(--quadro); }
-.abrir:focus-visible { outline: 2px solid var(--destaque); outline-offset: -2px; }
-.cartao img, .cartao video { display: block; width: 100%; height: auto; background: var(--quadro); }
-.abrir img { aspect-ratio: 4 / 3; object-fit: contain; }
-.quadro { background: var(--quadro); display: flex; justify-content: center; }
-.laco .quadro img { width: auto; max-width: 100%; max-height: 72vh; }
-.cartao video { max-height: 72vh; }
-figcaption { padding: 12px 14px 14px; }
-figcaption h3 { margin: 0 0 4px; font-size: 1rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-figcaption p { margin: 0 0 6px; color: var(--suave); font-size: 0.92rem; }
-.script { font-size: 0.8rem; text-decoration: none; }
-.selo { font-size: 0.72rem; font-weight: 600; padding: 1px 8px; border-radius: 999px; }
-.selo-terceiros { background: var(--terceiros-fundo); color: var(--terceiros); }
-.selo-anterior { background: var(--anterior-fundo); color: var(--anterior); }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+header { padding-top: 32px; padding-bottom: 16px; }
+h1 { margin: 0 0 6px; font-size: clamp(1.5rem, 4vw, 2.1rem); }
+header p { margin: 0; color: var(--suave); }
+main { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); padding-bottom: 40px; }
+.cartao { margin: 0; background: var(--superficie); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
+.quadro { background: var(--quadro); display: flex; justify-content: center; cursor: pointer; }
+.quadro img { display: block; max-width: 100%; max-height: 75vh; height: auto; }
 .controles { display: flex; gap: 10px; align-items: center; padding: 10px 14px 0; flex-wrap: wrap; }
-.controles input { flex: 1 1 200px; accent-color: var(--destaque); }
+.controles input { flex: 1 1 180px; accent-color: var(--destaque); }
 .controles button, .controles select { font: inherit; color: var(--texto); background: var(--fundo);
   border: 1px solid var(--borda); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
 .controles button { min-width: 44px; }
-.controles output { font-variant-numeric: tabular-nums; font-size: 0.9rem; color: var(--suave); min-width: 17ch; }
-.scripts ul { columns: 2 260px; padding-left: 18px; font-size: 0.9rem; }
-footer { max-width: 1200px; margin: 0 auto; padding: 24px 16px 40px; color: var(--suave); font-size: 0.85rem;
-  border-top: 1px solid var(--borda); }
-#caixa { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
-#caixa::backdrop { background: rgba(0, 0, 0, 0.88); }
-#caixa .interior { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 10px; padding: 16px; }
-#caixa img { max-width: 100%; max-height: calc(100vh - 90px); object-fit: contain; }
-#caixa p { color: #e6e9ed; margin: 0; text-align: center; }
-#caixa button { position: fixed; background: rgba(255,255,255,0.12); color: #fff; border: 0; border-radius: 999px;
-  width: 44px; height: 44px; font-size: 1.3rem; cursor: pointer; }
-#caixa .fechar { top: 14px; right: 14px; }
-#caixa .ant { left: 14px; top: 50%; }
-#caixa .prox { right: 14px; top: 50%; }
+.controles output { font-variant-numeric: tabular-nums; font-size: 0.9rem; color: var(--suave); }
+figcaption { padding: 10px 14px 14px; }
+figcaption h2 { margin: 0 0 2px; font-size: 1.05rem; }
+figcaption p { margin: 0; color: var(--suave); font-size: 0.9rem; }
+.vazio { padding: 40px 16px; color: var(--suave); text-align: center; }
+footer { max-width: 1200px; margin: 0 auto; padding: 16px 16px 32px; color: var(--suave); font-size: 0.85rem; }
 </style>
 </head>
 <body>
 <header>
-  <h1>Radar de Chapecó, 04/11/2026</h1>
-  <p>Todas as figuras de radar da análise do evento de vento forte em Chapecó (SC): volumes brutos do radar banda S
-  da Defesa Civil de SC, produtos derivados e composições com o GOES-19. Horários em UTC e local (UTC−3).
-  Análise completa em <a href="https://github.com/reinaldohaas/echo_em_arco">echo_em_arco</a>. </p>
-  
+  <h1>Radar SC, últimas 6 horas</h1>
+  <p>MaxCAPPI dos radares do DECEA (REDEMET), como veio. Abre no quadro mais recente.</p>
 </header>
-<nav aria-label="Seções"><div><a href="#visao-geral">Visão geral do evento</a><a href="#animacoes">Animações</a><a href="#campos">Campos polarimétricos</a><a href="#vertical">Estrutura vertical e hidrometeoros</a><a href="#vento">Vento</a><a href="#topo">Topo do eco e radar sobre satélite</a><a href="#scripts">Scripts</a></div></nav>
-<main>
-<section id="visao-geral"><h2>Visão geral do evento</h2><p class="intro">Evolução da linha em arco sobre o Oeste de SC e trajetória dos núcleos, a partir dos volumes brutos do radar banda S de Chapecó e dos MaxCAPPI do DECEA.</p><div class="grade"><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Evolução em seis horários"><img src="imagens/visao-geral/chapeco_quadros_redemet.png" alt="Evolução em seis horários" loading="lazy"></button><figcaption><h3>Evolução em seis horários </h3><p>Quadros do radar em seis horários da passagem da linha.</p><a class="script" href="radar/plotar_radar_chapeco.py"><code>radar/plotar_radar_chapeco.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Trajetória dos núcleos"><img src="imagens/visao-geral/chapeco_trajetoria_nucleos.png" alt="Trajetória dos núcleos" loading="lazy"></button><figcaption><h3>Trajetória dos núcleos </h3><p>Refletividade máxima acumulada e trajetória dos núcleos, 09:00–12:00 local.</p><a class="script" href="radar/plotar_radar_chapeco.py"><code>radar/plotar_radar_chapeco.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Bairros com danos e trilha do radar"><img src="imagens/visao-geral/mapa_danos_trilha.png" alt="Bairros com danos e trilha do radar" loading="lazy"></button><figcaption><h3>Bairros com danos e trilha do radar </h3><p>Envelope dos bairros com danos relatados, trilha do núcleo e hidrografia. A Defesa Civil divulgou bairros, não pontos de dano. Hidrografia e bairros © colaboradores do OpenStreetMap.</p><a class="script" href="radar/mapa_danos_trilha.py"><code>radar/mapa_danos_trilha.py</code></a></figcaption></figure></div></section><section id="animacoes"><h2>Animações</h2><p class="intro">Laços de quadros e vídeos. Use o controle deslizante para parar num horário.</p><div class="grade"><figure class="cartao largo"><video controls loop muted playsinline preload="metadata" src="imagens/animacoes/radar_chapeco_20261104.mp4"></video><figcaption><h3>Gravação do radar, 09:16–11:45 local </h3><p>Gravação de tela do radar durante a passagem da linha.</p></figcaption></figure><figure class="cartao largo laco" data-quadros="[{&quot;src&quot;: &quot;imagens/animacoes/quadros-gravacao/radar_frame_00.png&quot;, &quot;rotulo&quot;: &quot;quadro 1&quot;}, {&quot;src&quot;: &quot;imagens/animacoes/quadros-gravacao/radar_frame_01.png&quot;, &quot;rotulo&quot;: &quot;quadro 2&quot;}, {&quot;src&quot;: &quot;imagens/animacoes/quadros-gravacao/radar_frame_02.png&quot;, &quot;rotulo&quot;: &quot;quadro 3&quot;}, {&quot;src&quot;: &quot;imagens/animacoes/quadros-gravacao/radar_frame_03.png&quot;, &quot;rotulo&quot;: &quot;quadro 4&quot;}, {&quot;src&quot;: &quot;imagens/animacoes/quadros-gravacao/radar_frame_04.png&quot;, &quot;rotulo&quot;: &quot;quadro 5&quot;}, {&quot;src&quot;: &quot;imagens/animacoes/quadros-gravacao/radar_frame_05.png&quot;, &quot;rotulo&quot;: &quot;quadro 6&quot;}, {&quot;src&quot;: &quot;imagens/animacoes/quadros-gravacao/radar_frame_06.png&quot;, &quot;rotulo&quot;: &quot;quadro 7&quot;}]"><div class="quadro"><img src="imagens/animacoes/quadros-gravacao/radar_frame_00.png" alt="Quadros da gravação" loading="lazy"></div><div class="controles"><button type="button" class="tocar" aria-label="Tocar">▶</button><input type="range" min="0" max="6" value="0" aria-label="Quadro"><select aria-label="Velocidade"><option value="900">lento</option><option value="450" selected>normal</option><option value="180">rápido</option></select><output>quadro 1</output></div><figcaption><h3>Quadros da gravação </h3><p>Sete quadros extraídos da gravação do radar.</p></figcaption></figure></div></section><section id="campos"><h2>Campos polarimétricos, 10:30 local (13:30 UTC), 0,5°</h2><p class="intro">Varredura mais baixa do radar banda S de Chapecó em torno do Aeroporto. O feixe passa ~280 m acima do chão sobre o aeroporto.</p><div class="grade"><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Refletividade (Z)"><img src="imagens/campos/campo_Z.png" alt="Refletividade (Z)" loading="lazy"></button><figcaption><h3>Refletividade (Z) </h3><p>Z a 0,5°, 13:30 UTC.</p><a class="script" href="radar/figuras_video.py"><code>radar/figuras_video.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Velocidade radial (V)"><img src="imagens/campos/campo_V.png" alt="Velocidade radial (V)" loading="lazy"></button><figcaption><h3>Velocidade radial (V) </h3><p>V a 0,5°, 13:30 UTC.</p><a class="script" href="radar/figuras_video.py"><code>radar/figuras_video.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Coeficiente de correlação (CC)"><img src="imagens/campos/campo_CC.png" alt="Coeficiente de correlação (CC)" loading="lazy"></button><figcaption><h3>Coeficiente de correlação (CC) </h3><p>CC a 0,5°, 13:30 UTC. O CC anômalo sobre o aeroporto é a principal pendência.</p><a class="script" href="radar/figuras_video.py"><code>radar/figuras_video.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Refletividade diferencial (ZDR)"><img src="imagens/campos/campo_ZDR.png" alt="Refletividade diferencial (ZDR)" loading="lazy"></button><figcaption><h3>Refletividade diferencial (ZDR) </h3><p>ZDR a 0,5°, 13:30 UTC.</p><a class="script" href="radar/figuras_video.py"><code>radar/figuras_video.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Mapa da trilha"><img src="imagens/campos/mapa.png" alt="Mapa da trilha" loading="lazy"></button><figcaption><h3>Mapa da trilha </h3><p>Base usada para animar a trilha do núcleo no vídeo.</p><a class="script" href="radar/figuras_video.py"><code>radar/figuras_video.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Capa do vídeo v2"><img src="imagens/campos/poster.jpg" alt="Capa do vídeo v2" loading="lazy"></button><figcaption><h3>Capa do vídeo v2 </h3><p>Quadro de abertura do vídeo.</p></figcaption></figure></div></section><section id="vertical"><h2>Estrutura vertical e hidrometeoros</h2><p class="intro">Alturas acima do radar (822 m). A fusão, estimada pelo próprio radar depois da passagem, fica a ~3,0–3,3 km acima dele.</p><div class="grade"><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Corte vertical seguindo o núcleo"><img src="imagens/vertical/corte_vertical.png" alt="Corte vertical seguindo o núcleo" loading="lazy"></button><figcaption><h3>Corte vertical seguindo o núcleo </h3><p>Z, ZDR, CC, KDP e classes, de 10:12 a 10:42 local.</p><a class="script" href="radar/corte_vertical_hidrometeoros.py"><code>radar/corte_vertical_hidrometeoros.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Coluna e hidrometeoros"><img src="imagens/vertical/corte_vertical_hidrometeoros.png" alt="Coluna e hidrometeoros" loading="lazy"></button><figcaption><h3>Coluna e hidrometeoros </h3><p>Nível de fusão (QVP), viés de ZDR e coluna seguindo o núcleo.</p><a class="script" href="radar/corte_vertical_hidrometeoros.py"><code>radar/corte_vertical_hidrometeoros.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Z máximo por altura e horário"><img src="imagens/vertical/chuva.png" alt="Z máximo por altura e horário" loading="lazy"></button><figcaption><h3>Z máximo por altura e horário </h3><p>Só com CC ≥ 0,90: a coluna é de chuva intensa.</p><a class="script" href="radar/figuras_video_microexplosao.py"><code>radar/figuras_video_microexplosao.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Aeroporto, 13:30 UTC, por elevação"><img src="imagens/vertical/aeroporto_1330_elevacoes.png" alt="Aeroporto, 13:30 UTC, por elevação" loading="lazy"></button><figcaption><h3>Aeroporto, 13:30 UTC, por elevação </h3><p>O núcleo de CC baixo nas elevações do volume de 13:30 UTC.</p><a class="script" href="radar/analise_rotacao.py"><code>radar/analise_rotacao.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Eco em gancho e BWER"><img src="imagens/vertical/gancho_baixos_niveis.png" alt="Eco em gancho e BWER" loading="lazy"></button><figcaption><h3>Eco em gancho e BWER </h3><p>Busca de BWER, eco em gancho e granizo, 13:00–14:00 UTC, em grade de 1 km.</p><a class="script" href="radar/analise_bwer_gancho_granizo.py"><code>radar/analise_bwer_gancho_granizo.py</code></a></figcaption></figure></div></section><section id="vento"><h2>Vento, cisalhamento e rotação</h2><p class="intro">Com radar único e a fronteira quase radial, rotação e cisalhamento linear dão o mesmo sinal.</p><div class="grade"><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Vento atrás da linha, 10:30 local"><img src="imagens/vento/vento.png" alt="Vento atrás da linha, 10:30 local" loading="lazy"></button><figcaption><h3>Vento atrás da linha, 10:30 local </h3><p>A componente em direção ao radar cai de 27 m/s a 130 m para 18 m/s a 810 m. Uma única varredura.</p><a class="script" href="radar/figuras_video_microexplosao.py"><code>radar/figuras_video_microexplosao.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Cisalhamento em 2 km"><img src="imagens/vento/cisalhamento.png" alt="Cisalhamento em 2 km" loading="lazy"></button><figcaption><h3>Cisalhamento em 2 km </h3><p>V e cisalhamento sem gates dobrados: núcleo contra outros discos.</p><a class="script" href="radar/figuras_video_microexplosao.py"><code>radar/figuras_video_microexplosao.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Velocidade radial em torno do Aeroporto"><img src="imagens/vento/velocidade_painel.png" alt="Velocidade radial em torno do Aeroporto" loading="lazy"></button><figcaption><h3>Velocidade radial em torno do Aeroporto </h3><p>13:12–13:48 UTC, com aliasing corrigido por regiões contíguas.</p><a class="script" href="radar/analise_velocidade.py"><code>radar/analise_velocidade.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Resumo da análise de rotação"><img src="imagens/vento/rotacao_resumo.png" alt="Resumo da análise de rotação" loading="lazy"></button><figcaption><h3>Resumo da análise de rotação </h3><p>Descida de precipitação, velocidade relativa ao núcleo e largura espectral.</p><a class="script" href="radar/analise_rotacao_final.py"><code>radar/analise_rotacao_final.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Evolução da rotação"><img src="imagens/vento/rotacao_evolucao.png" alt="Evolução da rotação" loading="lazy"></button><figcaption><h3>Evolução da rotação </h3><p>Cisalhamento seguindo o núcleo de CC baixo ao longo dos volumes.</p><a class="script" href="radar/analise_rotacao.py"><code>radar/analise_rotacao.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Perfil vertical da rotação"><img src="imagens/vento/rotacao_perfil_vertical.png" alt="Perfil vertical da rotação" loading="lazy"></button><figcaption><h3>Perfil vertical da rotação </h3><p>As 14 elevações, seguindo o núcleo com o movimento ajustado.</p><a class="script" href="radar/analise_rotacao.py"><code>radar/analise_rotacao.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar A rotação desceu?"><img src="imagens/vento/descida_rotacao.png" alt="A rotação desceu?" loading="lazy"></button><figcaption><h3>A rotação desceu? </h3><p>Maior cisalhamento em arco de 2 km perto da trilha, todas as elevações, 13:06–13:36 UTC.</p><a class="script" href="radar/analise_descida.py"><code>radar/analise_descida.py</code></a></figcaption></figure></div></section><section id="topo"><h2>Topo do eco e radar sobre satélite</h2><p class="intro">Echo Top e echomax do radar de Chapecó sobre o canal 13 do GOES-19, 12–15 UTC. Perto do radar o topo fica truncado e é só um limite inferior.</p><div class="grade"><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Echo Top, 13:30 UTC"><img src="imagens/topo/echotop_1330.png" alt="Echo Top, 13:30 UTC" loading="lazy"></button><figcaption><h3>Echo Top, 13:30 UTC </h3><p>Topo a 18 dBZ (eco) e 40 dBZ (núcleo convectivo) sobre o GOES-19.</p><a class="script" href="satelite/compor_echotop_satelite.py"><code>satelite/compor_echotop_satelite.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Echo Top em seis horários"><img src="imagens/topo/echotop_painel.png" alt="Echo Top em seis horários" loading="lazy"></button><figcaption><h3>Echo Top em seis horários </h3><p>Painel de Echo Top sobre o canal 13.</p><a class="script" href="satelite/compor_echotop_satelite.py"><code>satelite/compor_echotop_satelite.py</code></a></figcaption></figure><figure class="cartao largo laco" data-quadros="[{&quot;src&quot;: &quot;imagens/topo/echotop/e_00.png&quot;, &quot;rotulo&quot;: &quot;12:00 UTC · 09:00 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_01.png&quot;, &quot;rotulo&quot;: &quot;12:06 UTC · 09:06 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_02.png&quot;, &quot;rotulo&quot;: &quot;12:12 UTC · 09:12 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_03.png&quot;, &quot;rotulo&quot;: &quot;12:18 UTC · 09:18 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_04.png&quot;, &quot;rotulo&quot;: &quot;12:24 UTC · 09:24 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_05.png&quot;, &quot;rotulo&quot;: &quot;12:30 UTC · 09:30 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_06.png&quot;, &quot;rotulo&quot;: &quot;12:36 UTC · 09:36 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_07.png&quot;, &quot;rotulo&quot;: &quot;12:42 UTC · 09:42 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_08.png&quot;, &quot;rotulo&quot;: &quot;12:48 UTC · 09:48 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_09.png&quot;, &quot;rotulo&quot;: &quot;12:54 UTC · 09:54 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_10.png&quot;, &quot;rotulo&quot;: &quot;13:00 UTC · 10:00 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_11.png&quot;, &quot;rotulo&quot;: &quot;13:06 UTC · 10:06 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_12.png&quot;, &quot;rotulo&quot;: &quot;13:12 UTC · 10:12 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_13.png&quot;, &quot;rotulo&quot;: &quot;13:18 UTC · 10:18 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_14.png&quot;, &quot;rotulo&quot;: &quot;13:24 UTC · 10:24 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_15.png&quot;, &quot;rotulo&quot;: &quot;13:30 UTC · 10:30 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_16.png&quot;, &quot;rotulo&quot;: &quot;13:36 UTC · 10:36 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_17.png&quot;, &quot;rotulo&quot;: &quot;13:42 UTC · 10:42 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_18.png&quot;, &quot;rotulo&quot;: &quot;13:48 UTC · 10:48 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_19.png&quot;, &quot;rotulo&quot;: &quot;13:54 UTC · 10:54 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_20.png&quot;, &quot;rotulo&quot;: &quot;14:00 UTC · 11:00 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_21.png&quot;, &quot;rotulo&quot;: &quot;14:06 UTC · 11:06 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_22.png&quot;, &quot;rotulo&quot;: &quot;14:12 UTC · 11:12 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_23.png&quot;, &quot;rotulo&quot;: &quot;14:18 UTC · 11:18 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_24.png&quot;, &quot;rotulo&quot;: &quot;14:24 UTC · 11:24 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_25.png&quot;, &quot;rotulo&quot;: &quot;14:30 UTC · 11:30 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_26.png&quot;, &quot;rotulo&quot;: &quot;14:36 UTC · 11:36 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_27.png&quot;, &quot;rotulo&quot;: &quot;14:42 UTC · 11:42 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_28.png&quot;, &quot;rotulo&quot;: &quot;14:48 UTC · 11:48 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_29.png&quot;, &quot;rotulo&quot;: &quot;14:54 UTC · 11:54 local&quot;}, {&quot;src&quot;: &quot;imagens/topo/echotop/e_30.png&quot;, &quot;rotulo&quot;: &quot;15:00 UTC · 12:00 local&quot;}]"><div class="quadro"><img src="imagens/topo/echotop/e_00.png" alt="Echo Top, quadro a quadro" loading="lazy"></div><div class="controles"><button type="button" class="tocar" aria-label="Tocar">▶</button><input type="range" min="0" max="30" value="0" aria-label="Quadro"><select aria-label="Velocidade"><option value="900">lento</option><option value="450" selected>normal</option><option value="180">rápido</option></select><output>12:00 UTC · 09:00 local</output></div><figcaption><h3>Echo Top, quadro a quadro </h3><p>Um quadro por volume do radar, a cada 6 min.</p><a class="script" href="satelite/compor_echotop_satelite.py"><code>satelite/compor_echotop_satelite.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Echomax e satélite, 13:30 UTC"><img src="imagens/topo/composicao_1330.png" alt="Echomax e satélite, 13:30 UTC" loading="lazy"></button><figcaption><h3>Echomax e satélite, 13:30 UTC </h3><p>Satélite, echomax e composição no volume de 13:30 UTC.</p><a class="script" href="satelite/compor_radar_satelite.py"><code>satelite/compor_radar_satelite.py</code></a></figcaption></figure><figure class="cartao"><button type="button" class="abrir" aria-label="Ampliar Composição em seis horários"><img src="imagens/topo/composicao_painel.png" alt="Composição em seis horários" loading="lazy"></button><figcaption><h3>Composição em seis horários </h3><p>Echomax sobre o canal 13 do GOES-19.</p><a class="script" href="satelite/compor_radar_satelite.py"><code>satelite/compor_radar_satelite.py</code></a></figcaption></figure><figure class="cartao largo"><video controls loop muted playsinline preload="metadata" src="imagens/topo/echotop_animacao.mp4"></video><figcaption><h3>Animação do Echo Top </h3><p>Echo Top sobre o GOES-19, 12–15 UTC.</p><a class="script" href="satelite/compor_echotop_satelite.py"><code>satelite/compor_echotop_satelite.py</code></a></figcaption></figure></div></section>
-<section id="scripts" class="scripts">
-  <h2>Scripts</h2>
-  <p class="intro">Código que gera as figuras. Os volumes brutos (.vol) não estão no repositório.</p>
-  <ul><li><a href="radar/analise_bwer_gancho_granizo.py"><code>radar/analise_bwer_gancho_granizo.py</code></a></li><li><a href="radar/analise_descida.py"><code>radar/analise_descida.py</code></a></li><li><a href="radar/analise_nucleo.py"><code>radar/analise_nucleo.py</code></a></li><li><a href="radar/analise_rotacao.py"><code>radar/analise_rotacao.py</code></a></li><li><a href="radar/analise_rotacao_checagens.py"><code>radar/analise_rotacao_checagens.py</code></a></li><li><a href="radar/analise_rotacao_final.py"><code>radar/analise_rotacao_final.py</code></a></li><li><a href="radar/analise_velocidade.py"><code>radar/analise_velocidade.py</code></a></li><li><a href="radar/baixar_redemet_chapeco.py"><code>radar/baixar_redemet_chapeco.py</code></a></li><li><a href="radar/corte_vertical_complemento.py"><code>radar/corte_vertical_complemento.py</code></a></li><li><a href="radar/corte_vertical_hidrometeoros.py"><code>radar/corte_vertical_hidrometeoros.py</code></a></li><li><a href="radar/figuras_video.py"><code>radar/figuras_video.py</code></a></li><li><a href="radar/figuras_video_1330.py"><code>radar/figuras_video_1330.py</code></a></li><li><a href="radar/figuras_video_microexplosao.py"><code>radar/figuras_video_microexplosao.py</code></a></li><li><a href="radar/leitor_vol_chapeco.py"><code>radar/leitor_vol_chapeco.py</code></a></li><li><a href="radar/mapa_danos_trilha.py"><code>radar/mapa_danos_trilha.py</code></a></li><li><a href="radar/painel_redemet_georref.py"><code>radar/painel_redemet_georref.py</code></a></li><li><a href="radar/plotar_radar_chapeco.py"><code>radar/plotar_radar_chapeco.py</code></a></li><li><a href="radar/teste_microexplosao.py"><code>radar/teste_microexplosao.py</code></a></li><li><a href="radar/teste_microexplosao_2.py"><code>radar/teste_microexplosao_2.py</code></a></li><li><a href="radar/teste_reconciliacao.py"><code>radar/teste_reconciliacao.py</code></a></li><li><a href="radar/RELATORIO_ROTACAO.md"><code>radar/RELATORIO_ROTACAO.md</code></a></li><li><a href="satelite/compor_echotop_satelite.py"><code>satelite/compor_echotop_satelite.py</code></a></li><li><a href="satelite/compor_radar_satelite.py"><code>satelite/compor_radar_satelite.py</code></a></li><li><a href="satelite/echotop_trilha.py"><code>satelite/echotop_trilha.py</code></a></li><li><a href="baixar_recentes.py"><code>baixar_recentes.py</code></a></li><li><a href="gerar_pagina.py"><code>gerar_pagina.py</code></a></li></ul>
-</section>
-</main>
-<footer>65 imagens · gerado em 19/11/2026 18:51 por <code>gerar_pagina.py</code>.</footer>
-<dialog id="caixa" aria-label="Imagem ampliada">
-  <div class="interior"><img alt=""><p></p></div>
-  <button type="button" class="fechar" aria-label="Fechar">✕</button>
-  <button type="button" class="ant" aria-label="Anterior">‹</button>
-  <button type="button" class="prox" aria-label="Próxima">›</button>
-</dialog>
+<main><p class="vazio">Nenhuma imagem ainda. Rode <code>python baixar_recentes.py</code>.</p></main>
+<footer>Atualizado em 19/11/2026 19:44 local (22:44 UTC). Fonte: REDEMET/DECEA.</footer>
 <script>
-(() => {
-  // Laços de quadros
-  document.querySelectorAll('.laco').forEach(fig => {
-    const quadros = JSON.parse(fig.dataset.quadros);
-    const img = fig.querySelector('.quadro img'), faixa = fig.querySelector('input'),
-          botao = fig.querySelector('.tocar'), vel = fig.querySelector('select'), rotulo = fig.querySelector('output');
-    let i = 0, timer = null;
-    const pre = new Set();
-    const mostrar = n => {
-      i = (n + quadros.length) % quadros.length;
-      img.src = quadros[i].src; faixa.value = i; rotulo.textContent = quadros[i].rotulo;
-      const prox = quadros[(i + 1) % quadros.length].src;
-      if (!pre.has(prox)) { pre.add(prox); new Image().src = prox; }
-    };
-    const parar = () => { clearInterval(timer); timer = null; botao.textContent = '▶'; botao.setAttribute('aria-label', 'Tocar'); };
-    const tocar = () => { parar(); timer = setInterval(() => mostrar(i + 1), +vel.value);
-                           botao.textContent = '❚❚'; botao.setAttribute('aria-label', 'Pausar'); };
-    botao.addEventListener('click', () => timer ? parar() : tocar());
-    faixa.addEventListener('input', () => { parar(); mostrar(+faixa.value); });
-    vel.addEventListener('change', () => { if (timer) tocar(); });
-    fig.querySelector('.quadro').addEventListener('click', () => timer ? parar() : tocar());
-  });
-
-  // Caixa de ampliação
-  const caixa = document.getElementById('caixa'), cimg = caixa.querySelector('img'), ctxt = caixa.querySelector('p');
-  const botoes = [...document.querySelectorAll('.abrir')];
-  let atual = 0;
-  const abrir = n => {
-    atual = (n + botoes.length) % botoes.length;
-    const b = botoes[atual], im = b.querySelector('img');
-    cimg.src = im.src; cimg.alt = im.alt;
-    ctxt.textContent = b.closest('figure').querySelector('h3').textContent.trim();
-    if (!caixa.open) caixa.showModal();
-  };
-  botoes.forEach((b, n) => b.addEventListener('click', () => abrir(n)));
-  caixa.querySelector('.fechar').addEventListener('click', () => caixa.close());
-  caixa.querySelector('.ant').addEventListener('click', () => abrir(atual - 1));
-  caixa.querySelector('.prox').addEventListener('click', () => abrir(atual + 1));
-  caixa.addEventListener('click', ev => { if (ev.target === caixa || ev.target.classList.contains('interior')) caixa.close(); });
-  document.addEventListener('keydown', ev => {
-    if (!caixa.open) return;
-    if (ev.key === 'ArrowLeft') abrir(atual - 1);
-    if (ev.key === 'ArrowRight') abrir(atual + 1);
-  });
-})();
+document.querySelectorAll('.laco').forEach(fig => {
+  const q = JSON.parse(fig.dataset.quadros), img = fig.querySelector('img'), faixa = fig.querySelector('input'),
+        botao = fig.querySelector('.tocar'), vel = fig.querySelector('select'), rot = fig.querySelector('output');
+  let i = q.length - 1, timer = null;
+  const mostrar = n => { i = (n + q.length) % q.length; img.src = q[i].src; faixa.value = i; rot.textContent = q[i].rotulo;
+    new Image().src = q[(i + 1) % q.length].src; };
+  const parar = () => { clearInterval(timer); timer = null; botao.textContent = '▶'; botao.setAttribute('aria-label', 'Tocar'); };
+  const tocar = () => { parar(); timer = setInterval(() => mostrar(i + 1), +vel.value); botao.textContent = '❚❚';
+    botao.setAttribute('aria-label', 'Pausar'); };
+  botao.addEventListener('click', () => timer ? parar() : tocar());
+  faixa.addEventListener('input', () => { parar(); mostrar(+faixa.value); });
+  vel.addEventListener('change', () => { if (timer) tocar(); });
+  fig.querySelector('.quadro').addEventListener('click', () => timer ? parar() : tocar());
+});
 </script>
 </body>
 </html>
