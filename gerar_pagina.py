@@ -12,7 +12,9 @@ from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
 LOCAL = timedelta(hours=-3)
-NOMES = {"mi": "Morro da Igreja, Urubici (SC)", "sg": "Santiago (RS)", "ct": "Curitiba (PR)"}
+NOMES = {"chp": "Chapecó (Defesa Civil SC)", "lon": "Lontras (Defesa Civil SC)", "ara": "Araranguá (Defesa Civil SC)",
+         "mi": "Morro da Igreja, Urubici (DECEA)", "sg": "Santiago (DECEA)", "ct": "Curitiba (DECEA)"}
+PRODUTOS = {"ppi": "refletividade, elevação mais baixa", "maxcappi": "MaxCAPPI"}
 
 
 def rotulo(texto):
@@ -25,9 +27,11 @@ def lacos():
     for q in sorted((AQUI / "recentes").glob("*/*/quadros.csv")):
         with open(q, encoding="utf-8") as f:
             linhas = [r for r in csv.DictReader(f) if (q.parent / r["arquivo"]).exists()]
+        if not linhas:
+            continue
         area, produto = q.parent.parent.name, q.parent.name
         itens.append({
-            "titulo": f"{NOMES.get(area, area)} · {produto.upper()}",
+            "titulo": f"{NOMES.get(area, area)} · {PRODUTOS.get(produto, produto)}",
             "quadros": [{"src": (q.parent / r["arquivo"]).relative_to(AQUI).as_posix(), "rotulo": rotulo(r["data_utc"])}
                         for r in linhas],
         })
@@ -48,14 +52,14 @@ def cartao(it):
             f'<input type="range" min="0" max="{len(q) - 1}" value="{len(q) - 1}" aria-label="Quadro">'
             f'<select aria-label="Velocidade"><option value="900">lento</option><option value="450" selected>normal</option>'
             f'<option value="180">rápido</option></select><output>{e(ultimo["rotulo"])}</output></div>'
-            f'<figcaption><h2>{e(it["titulo"])}</h2><p>{len(q)} quadros, de {e(q[0]["rotulo"])} a {e(ultimo["rotulo"])}.</p>'
+            f'<figcaption><h2>{e(it["titulo"])}</h2><p>{len(q)} quadro{'s' if len(q) > 1 else ''}, de {e(q[0]["rotulo"])} a {e(ultimo["rotulo"])}.</p>'
             f'</figcaption></figure>')
 
 
 def main():
     itens = lacos()
     corpo = "".join(cartao(it) for it in itens) or (
-        '<p class="vazio">Nenhuma imagem ainda. Rode <code>python baixar_recentes.py</code>.</p>')
+        '<p class="vazio">Nenhuma imagem ainda. Rode <code>python baixar_ftp_sc.py</code>.</p>')
     agora = datetime.now(timezone.utc).replace(tzinfo=None)
     (AQUI / "index.html").write_text(TEMPLATE.format(
         corpo=corpo, atualizado=f"{agora + LOCAL:%d/%m/%Y %H:%M} local ({agora:%H:%M} UTC)"), encoding="utf-8")
@@ -101,10 +105,10 @@ footer {{ max-width: 1200px; margin: 0 auto; padding: 16px 16px 32px; color: var
 <body>
 <header>
   <h1>Radar SC, últimas 6 horas</h1>
-  <p>MaxCAPPI dos radares do DECEA (REDEMET), como veio. Abre no quadro mais recente.</p>
+  <p>Radares de Santa Catarina: volumes do FTP da Defesa Civil de SC desenhados por <code>baixar_ftp_sc.py</code>. Abre no quadro mais recente.</p>
 </header>
 <main>{corpo}</main>
-<footer>Atualizado em {atualizado}. Fonte: REDEMET/DECEA.</footer>
+<footer>Atualizado em {atualizado}. Fonte: Defesa Civil de SC.</footer>
 <script>
 document.querySelectorAll('.laco').forEach(fig => {{
   const q = JSON.parse(fig.dataset.quadros), img = fig.querySelector('img'), faixa = fig.querySelector('input'),

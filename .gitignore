@@ -3,3 +3,10 @@
 
 __pycache__/
 *.pyc
+
+# Volumes brutos baixados do FTP
+cache_vol/
+
+# Diagnóstico do FTP
+ftp_arvore.txt
+amostra_*.txt
