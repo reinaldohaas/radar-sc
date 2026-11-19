@@ -115,7 +115,7 @@ def amostra(ftp, sigla):
     nomes = sorted(n for n, d in listar(ftp, f"/{sigla}/HDF5") if not d)
     if not nomes:
         raise SystemExit(f"/{sigla}/HDF5 está vazia")
-    destino = CACHE / sigla / nomes[-1]
+    destino = AQUI / "amostras" / sigla / nomes[-1]  # fora do cache: o fluxo normal apaga o que está em cache_vol
     destino.parent.mkdir(parents=True, exist_ok=True)
     with open(destino, "wb") as f:
         ftp.retrbinary(f"RETR /{sigla}/HDF5/{nomes[-1]}", f.write)

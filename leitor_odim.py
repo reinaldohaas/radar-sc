@@ -15,7 +15,24 @@ def _txt(v):
     return v.decode() if isinstance(v, bytes) else str(v)
 
 
-def ler_volume_odim(caminho, quantidades=PREFERIDAS):
+RHOHV_MIN = 0.8
+
+
+def _fisico(g):
+    at = g["what"].attrs
+    bruto = g["data"][()]
+    fis = bruto.astype(np.float32) * float(at["gain"]) + float(at["offset"])
+    fis[(bruto == at["nodata"]) | (bruto == at["undetect"])] = np.nan
+    return fis
+
+
+def ler_volume_odim(caminho, quantidades=PREFERIDAS, th_rhohv=True):
+    """th_rhohv=True: usa a refletividade bruta (TH) e retira os gates com RhoHV < 0,8.
+
+    Em Araranguá, o filtro de clutter Doppler que gera o DBZH apaga raios inteiros de chuva, porque a PRF
+    baixa (400/267 Hz em banda X) deixa a velocidade e o SQI sem sentido. O RhoHV não depende do Doppler:
+    retira mar, relevo e ruído (RhoHV baixo) e mantém a chuva (RhoHV ~0,95–1).
+    """
     import h5py
     with h5py.File(Path(caminho), "r") as h:
         onde = h["where"].attrs
@@ -25,14 +42,16 @@ def ler_volume_odim(caminho, quantidades=PREFERIDAS):
             ds = h[nome]
             w = ds["where"].attrs
             dados = {_txt(ds[d]["what"].attrs["quantity"]): ds[d] for d in ds if d.startswith("data")}
-            q = next((q for q in quantidades if q in dados), None)
-            if q is None:
-                continue
-            g = dados[q]
-            at = g["what"].attrs
-            bruto = g["data"][()]
-            fis = bruto.astype(np.float32) * float(at["gain"]) + float(at["offset"])
-            fis[(bruto == at["nodata"]) | (bruto == at["undetect"])] = np.nan
+            if th_rhohv and "TH" in dados and "RHOHV" in dados:
+                q = f"TH, RhoHV ≥ {RHOHV_MIN:.1f}"
+                fis = _fisico(dados["TH"])
+                rho = _fisico(dados["RHOHV"])
+                fis[~(rho >= RHOHV_MIN)] = np.nan
+            else:
+                q = next((q for q in quantidades if q in dados), None)
+                if q is None:
+                    continue
+                fis = _fisico(dados[q])
 
             nr = int(w["nrays"])
             how = ds["how"].attrs if "how" in ds else {}

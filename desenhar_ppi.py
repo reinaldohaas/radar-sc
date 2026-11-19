@@ -92,7 +92,8 @@ def desenhar(vol_path, saida, nome, t_utc: datetime, alcance_km=250):
     ax.plot(vol["lon0"], vol["lat0"], "k+", ms=10, mew=1.5, **kw)
 
     local = t_utc - timedelta(hours=3)
-    ax.set_title(f"{nome} · refletividade {s['ele_deg']:.1f}°\n"
+    campo = f" ({s['quantity']})" if s.get("quantity") else ""
+    ax.set_title(f"{nome} · refletividade{campo} {s['ele_deg']:.1f}°\n"
                  f"{local:%d/%m/%Y %H:%M} local ({t_utc:%H:%M} UTC)", fontsize=11)
     cb = fig.colorbar(m, ax=ax, orientation="horizontal", fraction=0.04, pad=0.03, ticks=NIVEIS)
     cb.set_label("dBZ")
