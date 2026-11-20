@@ -10,7 +10,7 @@ Um pesquisador do INPE relatou que tentou usar os dados deste radar e os achou t
 | O que o usuário vê | Causa | Solução | Quem resolve | Dificuldade |
 |---|---|---|---|---|
 | Velocidade radial sem sentido; ventos dobrados | PRF de 400/267 Hz em banda X: Nyquist de 3,2 m/s por PRF (seção 2.1) | PRF de 1200/900 Hz | fabricante / operador, por configuração | baixa |
-| Raios inteiros de chuva apagados no DBZH | filtro de clutter Doppler trabalhando com velocidade aleatória (seção 2) | mudar a PRF; até lá, usar TH com máscara de RhoHV | operador / usuário | baixa |
+| Raios inteiros de chuva apagados no DBZH; setores "bloqueados" que mudam de um dia para outro | filtro de clutter Doppler trabalhando com velocidade aleatória: apaga em mediana 44% dos raios com chuva a 0,5° (seções 2 e 3.1) | mudar a PRF; até lá, usar TH com máscara de RhoHV | operador / usuário | baixa |
 | Chuva fraca ausente; só aparecem núcleos de 30–50 dBZ | sensibilidade ~25–35 dB abaixo do esperado (seção 2.2) | diagnóstico do transmissor, da compressão de pulso, das perdas e do receptor; recalibração | fabricante | **média a alta, depende da causa** |
 | RhoHV baixo em chuva; ZDR negativo; ΦDP ruidoso | SNR de 5–8 dB mesmo em chuva moderada; ZDR sem calibração (seções 2.2 e 4.2) | corrigir a sensibilidade; varredura vertical (birdbath) para o ZDR | fabricante / operador | média |
 | Disco de ~74 dBZ em volta do radar | zona cega de 2,2 km: o receptor capta o próprio pulso (seção 2) | pulso curto de preenchimento, se o equipamento tiver; senão, descartar os 2,2 km | fabricante / usuário | baixa |
@@ -31,7 +31,7 @@ Resultado: não houve como saber quanto choveu (`chuva_ponto.py`, `chuva/Laguna_
 - **Configuração (sem obra):** PRF, envio ao FTP, metadados, calibração do ZDR e varredura do Sol resolvem a maior parte das inconsistências que um usuário percebe.
 - **Bloqueio a oeste:** tem solução definitiva com a torre de 25 m no lugar atual.
 
-O ponto em aberto é a **sensibilidade**:
+O ponto em aberto é a **sensibilidade**. Ela está 22–29 dB abaixo da especificação publicada pelo próprio fabricante (18 dBZ a 50 km no protótipo de 100 W), o que torna mais provável um defeito ou erro de configuração que um limite do equipamento (seção 2.2):
 - **Se for defeito** (compressão de pulso desligada, transmissor com pouca potência, perda na junta rotativa ou no guia de onda), conserta-se, e o radar passa a ver a chuva fraca até ~60–80 km.
 - **Se for o limite do próprio equipamento**, o radar continua útil para chuva moderada a forte até ~40–50 km, como complemento local dos radares de banda S (Morro da Igreja), mas não como radar de cobertura regional.
 
@@ -132,6 +132,19 @@ A menor refletividade que o radar detecta (Zmin = TH − SNR) foi medida em 47 v
 
 O Zmin cresce com o quadrado da distância, como esperado; o problema é o nível. Um radar meteorológico de banda X costuma detectar da ordem de −20 a −30 dBZ a 1 km. Aqui o limite é de ~5–10 dBZ, cerca de **25–35 dB a menos**. Os dados mostram isso independentemente do campo SNR: quase não há gates com TH abaixo de 30 dBZ além de 10 km.
 
+**Comparação com a especificação do fabricante.** A EEC publicou as especificações do protótipo Ranger-X1 (artigo da AMS, 94ª reunião anual, 2014):
+
+| Item | Especificação do protótipo | Este radar |
+|---|---|---|
+| Potência | 100 W | 410 W |
+| Forma de onda | pulso longo LFM de 67 µs, comprimido, mais um pulso curto de preenchimento de 2 µs | — |
+| Sensibilidade | **18 dBZ a 50 km com SNR de 0 dB** | **~41 dBZ a 50 km com SNR de 0 dB** (medido) |
+| PRF | 200 a 2400 Hz | 400 / 267 Hz |
+
+- **Sensibilidade.** Com 410 W, o mesmo projeto deveria chegar a ~12 dBZ a 50 km. Mesmo descontando a diferença entre o pulso de 67 µs do protótipo e o de ~14 µs que a zona cega deste radar sugere, ficaria em ~19 dBZ. O medido fica **22–29 dB abaixo** do que o próprio fabricante especifica. Isso aponta para defeito ou configuração, como compressão de pulso desligada, perdas ou receptor, e não para limite do equipamento.
+- **Zona cega.** O pulso de preenchimento existe justamente para cobrir a zona cega do pulso longo. Neste radar, os primeiros 2,2 km saem saturados, o que indica que o pulso de preenchimento não está ativo ou não está funcionando.
+- **PRF.** A faixa de 200–2400 Hz comporta os 1200/900 Hz recomendados.
+
 **Consequências:**
 - chuva fraca e estratiforme (< 30 dBZ) não aparece além de ~20 km, nem a de 40 dBZ além de ~40 km;
 - mesmo em chuva de 35–45 dBZ, o SNR fica em 5–8 dB. Com esse SNR, o RhoHV cai (mediana de 0,88–0,93 em chuva, quando deveria passar de 0,97), o ZDR fica enviesado e o ΦDP fica ruidoso. Parte do "RhoHV de clutter" da seção 2 vem disso;
@@ -168,6 +181,23 @@ Fração de pontos com eco (TH ≥ 10 dBZ, 5–40 km), média dos 7 volumes:
 Nesses pontos o RhoHV mediano é de 0,81–0,87 e o SQI de 0,11: alvos fixos, não chuva. Não é interferência de transmissor, que apareceria em todo o alcance. Nos setores vizinhos quase não há eco fixo (0,0–0,7%). A explicação mais provável é uma abertura na mata do morro, na direção da estrada (a Rua Morro dos Conventos sai a ~264°), que deixa o feixe passar só ali.
 
 ![Validação por azimute (MDT + mata)](figuras/v2_validacao_azimute.png)
+
+### 3.1 Por que os setores sem eco mudam de um dia para outro
+
+O bloqueio pelo relevo e pela mata é fixo e não muda entre horários. Se as imagens de um dia mostram mais setores "bloqueados" que as de outro, a causa é outra. Volume a volume, em 47 volumes de 16 a 20/11 (`setores_por_volume.py`, `setores_por_volume.csv`):
+
+| Causa | 0,5° | 1,4° |
+|---|---|---|
+| **Raios com chuva no TH e apagados no DBZH pelo filtro de clutter** | mediana de 37 raios por volume (44% dos raios com chuva), até 58 | mediana de 9 (21%), até 15 |
+| Sombras de atenuação (a chuva termina atrás de um núcleo ≥ 45 dBZ enquanto os vizinhos seguem) | mediana de 6, até 17 | mediana de 1, até 21 |
+| Volumes com chuva sobre o radar (radome molhado) | 18 de 47 | — |
+
+![Raios apagados pelo filtro, por volume](figuras/v3_setores_por_volume.png)
+
+1. **O filtro de clutter é o principal responsável.** Ele apaga raios inteiros de chuva onde há algum clutter: no setor norte e nordeste (300–50°, terra e a direção de Criciúma e Laguna) e na janela de 268–271°. Como a velocidade é aleatória (seção 2.1), os raios apagados mudam a cada volume. Em produtos feitos com o DBZH, como os de sites públicos de radar, isso aparece como setores "bloqueados" que vão e vêm. Corrige-se com a nova PRF; até lá, usando o TH com máscara de RhoHV.
+2. **Atenuação em banda X.** Uma célula forte perto do radar apaga o que está atrás dela, em forma de cunha. Em dias de chuva forte, há mais cunhas.
+3. **Radome molhado.** Com chuva sobre o radar, a água no radome atenua o sinal em todas as direções, tipicamente alguns dB em banda X. Somado à sensibilidade já baixa (seção 2.2), isso some com a chuva moderada a dezenas de quilômetros.
+4. **Sensibilidade.** A 76 km, onde fica Laguna, só aparecem ecos acima de ~45 dBZ. Num dia de chuva forte, a imagem mostra a célula intensa e quase nada em volta. No mesmo lugar, um dia de chuva moderada parece "sem eco".
 
 ## 4. Simulação do bloqueio
 
@@ -215,16 +245,24 @@ O MDS (modelo digital de superfície) inclui árvores e construções. MDS − M
 
 ![Altura da mata e das construções (MDS − MDT)](figuras/v3_altura_superficie.png)
 
-**Altura da superfície nos pontos estudados (2010–2012):**
+**Cuidado com as falésias.** Na falésia do Morro dos Conventos, voltada para o mar, o MDS mostra a parede quase vertical: cai de ~60 m para ~20 m em 10 m. O MDT suaviza a mesma parede numa rampa de ~25 m. A diferença MDS − MDT chega a 40 m e aparecia no mapa como uma faixa verde-escura ao longo da encosta leste, mas não é mata nem construção.
 
-| Ponto | MDS − MDT no ponto | Maior valor num raio de 40 m |
-|---|---|---|
-| Radar atual | 3,8 m | 24,7 m |
-| Topo da colina a NW | 8,5 m | 16,7 m |
-| Topo do Morro dos Conventos | 5,7 m | 9,7 m |
-| Vila (352–356°) | 0,2 m | 12,5 m |
-| Morro das Antenas | 0,0 m | 13,2 m |
-| Centro de Araranguá | 10,4 m | 21,1 m |
+A correção compara o MDS com o terreno mais alto num raio de 3 m, e de 15 m perto de encostas com mais de 30° (`mapa_altura_superficie.py`). Com ela, a mediana da "altura" nas encostas íngremes cai de 7,3 m para zero, e o percentil 95 cai de 21 para 6 m.
+
+A simulação não é afetada pelo artefato, porque usa o próprio MDS, que tem a falésia certa. Só o teste de "crescimento da mata" soma 6 m também nessas paredes, o que superestima um pouco o bloqueio para 200–240°, na direção do mar.
+
+**Altura da superfície nos pontos estudados (2010–2012, corrigida; `mds_altura_pontos.csv`):**
+
+| Ponto | Altura no ponto | Maior valor num raio de 40 m | Sem correção (raio de 40 m) |
+|---|---|---|---|
+| Radar atual | 2,9 m | 8,7 m | 21,7 m (falésia) |
+| Topo da colina a NW | 8,2 m | 14,9 m | 15,4 m |
+| Topo do Morro dos Conventos | 4,5 m | 8,9 m | 9,1 m |
+| Vila (352–356°) | 0,2 m | 12,2 m | 12,2 m |
+| Morro das Antenas | 0,0 m | 13,2 m (torres) | — |
+| Centro de Araranguá | 10,4 m | 21,1 m (prédios) | — |
+
+Os topos do morro e da colina estão a ~67–69 m de altitude, quase a mesma do chão do radar (67,8 m). Nenhum ponto do Morro dos Conventos chega perto de 500 m. Onde o relatório fala em 500–700 m, trata-se de **distância** da antena.
 
 O levantamento é de 2010–2012, anterior ao radar: a torre atual não aparece, e a mata cresceu desde então. Por isso a calibração testou um crescimento de 0, 3 e 6 m onde havia vegetação ou construção (`mds_calibracao.csv`):
 
@@ -294,7 +332,7 @@ Bloqueio médio, MDT + mata (sensibilidade completa em `sensibilidade_v2.csv` e 
 - **Morro das Antenas:** 255 m, provavelmente com acesso e energia (a confirmar), e é um pouco melhor nos primeiros 30 km. As torres de comunicação existentes também bloqueiam o feixe: o radar precisa ficar acima delas ou longe delas. A antena tem ~1 m de diâmetro, e até ~60 m dela (o campo próximo) uma estrutura dessa largura bloqueia o feixe inteiro.
 - **Torre no lugar atual:** a colina de 57 m (Google Earth) a NW tem no MDT 67,2 m, a mesma altura do chão do radar. Ela não é obstáculo de relevo; o que bloqueia é a mata em cima dela e no topo do morro. Por isso, levar o radar para a colina não ganha nada sobre erguer a antena onde está. Com 25 m, a antena fica também acima do farol, que hoje tem o topo 8 m acima dela e faz sombra a partir de 146°. É a opção com menos mudança: mesmo terreno, mesma energia e comunicação.
 - **Topo do Morro dos Conventos:** fica a 580 m do radar atual, no mesmo morro, e a mudança é menor. A torre precisa passar a mata em volta.
-- **Alternativa sem mudar o radar:** manejar a mata do topo do Morro dos Conventos, que fica entre ~500 e 700 m a sudoeste e oeste da antena. Isso precisa de avaliação ambiental, porque a área tem vegetação nativa.
+- **Alternativa sem mudar o radar:** manejar a mata do topo do Morro dos Conventos, numa faixa a 500–700 m **de distância** da antena, a sudoeste e oeste. O topo do morro tem ~69 m de altitude, quase a mesma do chão do radar. Isso precisa de avaliação ambiental, porque a área tem vegetação nativa.
 
 **Com o MDS** (mata de 2012 + 6 m; `mds_posicoes.csv`):
 
@@ -349,6 +387,8 @@ Scripts em `radar-sc/`:
 | `buscar_posicao.py` | busca de posições (versão 1, SRTM) |
 | `chuva_ponto.py --lat --lon --nome --data --das --ate` | taxa de chuva num ponto pelo radar (R(Z) e R(KDP)), série e mapa em `chuva/` |
 | `analise_polarimetrica.py` | bloqueio pela autoconsistência Z–ΦDP, ZDR por azimute e sensibilidade por distância (`polarimetria_azimute.csv`, `sensibilidade_alcance.csv`, `v3_polarimetria.png`) |
+| `mapa_altura_superficie.py` | altura da mata e das construções (MDS − MDT) com correção das falésias (`v3_altura_superficie.png`, `mds_altura_pontos.csv`) |
+| `setores_por_volume.py` | raios apagados pelo filtro, sombras de atenuação e chuva sobre o radar, volume a volume (`setores_por_volume.csv`, `v3_setores_por_volume.png`) |
 | `analise_mds.py` | versão 3: MDS do SIGSC, calibração, setores, prédios e torres (`mds_*.csv`, `v3_*.png`) |
 | `figuras_relatorio_v2.py` | figuras e `sensibilidade_v2.csv` (versão 2, MDT) |
 | `posicao_colina.py` | torre no lugar atual e no topo da colina; `sensibilidade_colina.csv`, `v2_pbb_colina.png` |

@@ -1,0 +1,6 @@
+ponto,mdt_m,mds_m,altura_bruta_m,altura_corrigida_m,max_bruta_raio40m,max_corrigida_raio40m
+radar (antena 49 m),67.9,71.6,3.7,2.9,21.7,8.7
+farol (topo 57 m),67.4,71.1,3.7,2.2,21.7,7.2
+colina (57 m),67.2,75.6,8.5,8.2,15.4,14.9
+vila (~10 m),1.6,1.8,0.2,0.2,12.2,12.2
+proposta (topo Conventos),69.2,73.9,4.7,4.5,9.1,8.9

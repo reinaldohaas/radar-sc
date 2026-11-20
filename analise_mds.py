@@ -7,7 +7,7 @@ Superfície usada na simulação:
   - fora delas: MDT + 15 m de mata em terra firme (como na versão 2); fora do MDT, SRTM + 15 m.
 
 Gera em relatorio/:
-  figuras/v3_altura_superficie.png  MDS − MDT em volta do radar (altura da mata e das construções)
+  figuras/v3_altura_superficie_bruta.png  MDS − MDT sem correção das falésias (a versão corrigida é de mapa_altura_superficie.py)
   figuras/v3_validacao_azimute.png  simulado (MDS) x falta de eco observada
   figuras/v3_pbb_posicoes.png       torre de 25 m: atual, colina, Conventos, Morro das Antenas
   mds_calibracao.csv                altura da antena atual e crescimento da mata x observado
@@ -208,7 +208,7 @@ def main():
     ax.set_xlim(lon[0], lon[-1]); ax.set_ylim(lat[0], lat[-1]); ax.set_aspect(c)
     fig.colorbar(m, ax=ax, shrink=0.7, label="MDS − MDT: altura da mata e das construções (m, 2010–2012)")
     ax.set_title("Morro dos Conventos: altura da superfície acima do terreno (SIGSC 1 m)")
-    fig.savefig(FIG / "v3_altura_superficie.png", bbox_inches="tight"); plt.close(fig)
+    fig.savefig(FIG / "v3_altura_superficie_bruta.png", bbox_inches="tight"); plt.close(fig)
     print("ok")
 
 
