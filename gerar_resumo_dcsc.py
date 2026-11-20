@@ -127,6 +127,10 @@ def main():
               "colina a noroeste (~67 m) estão praticamente na mesma altitude do chão do radar (~68 m). A mata (10–17 m em 2012, mais "
               "alta hoje) e obstáculos a menos de 100 m da antena bloqueiam 70–90% do feixe de 0,5° e grande parte "
               "do de 1,4° entre 240° e 340° — a direção do interior e da Serra Geral.",
+              "<b>Radar móvel colado no farol e na rede elétrica.</b> A antena fica num reboque, a ~3–4 m do chão, "
+              "a ~15 m do farol (que bloqueia ~141–153° em todas as elevações) e ao lado de um poste com fios, que "
+              "explicam setores estreitos sem eco e o aspecto de \"pente\" das imagens. Por ser móvel, o radar pode "
+              "ser afastado desses obstáculos ou levado a um ponto mais alto sem obra civil grande.",
               "<b>Eco fixo a 268–271°</b> (planície, cidade de Araranguá e Serra Geral) visto por uma abertura na "
               "mata. Os prédios de Araranguá (até ~40 m) causam clutter, mas bloqueiam no máximo ~13% do feixe.",
               "<b>Lacunas na transmissão:</b> em 8 horas de 20/11, faltaram volumes em 7 intervalos de mais de "
@@ -148,7 +152,8 @@ def main():
               ["Zona cega de 2,2 km", "Ativar pulso curto de preenchimento, se disponível", "Fabricante", "Baixo"],
               ["Lacunas no FTP (37% do tempo em 8 h)", "Rever transmissão e envio dos volumes", "DCSC / TI", "Baixo / imediato"],
               ["Metadados de posição e altitude", "Corrigir configuração do site (−28,934548; −49,362490; antena ~71 m)", "Operador", "Baixo / imediato"],
-              ["Bloqueio a oeste por vegetação", "Vistoria; poda até ~300 m da antena (paliativo, com licença ambiental); <b>torre de 25 m</b> (definitivo)", "DCSC", "Médio / meses"],
+              ["Farol, poste e fios a poucos metros do radar móvel", "Afastar o reboque ≥ 50–100 m do farol, longe de fios; ou elevá-lo numa plataforma", "DCSC", "Baixo / semanas"],
+              ["Bloqueio a oeste por vegetação", "Poda até ~300 m da antena (paliativo, com licença ambiental); antena a <b>25 m</b> (torre ou plataforma) ou reboque num ponto alto (definitivo)", "DCSC", "Médio / meses"],
           ], [4.4 * cm, 6.2 * cm, 2.8 * cm, 3.6 * cm])])]
 
     s += [P("5. Bloqueio do feixe e altura da antena", h1),
@@ -174,8 +179,10 @@ def main():
               "<b>Calibração</b>: varredura vertical para o ZDR e varredura do Sol para o azimute; correção dos "
               "metadados do site.",
               "<b>Transmissão</b>: eliminar as lacunas de envio de volumes ao FTP.",
-              "<b>Vistoria no local</b>: altura real da antena e obstáculos (árvores, postes, mastros) a menos de "
-              "300 m, especialmente nos setores 260–300°, 321–324° e 352–356°.",
+              "<b>Vistoria no local</b>: medir azimute e distância do farol, do poste e dos fios a partir da antena, "
+              "e os obstáculos a menos de 300 m, para escolher onde reposicionar o reboque.",
+              "<b>Reposicionar o radar móvel</b> longe do farol e da rede elétrica: é a ação de menor custo para "
+              "os setores bloqueados perto da antena.",
               "<b>Decidir a torre de 25 m</b> depois do diagnóstico da sensibilidade: se o radar recuperar a "
               "sensibilidade esperada, a torre o torna um radar de cobertura regional para o sul de SC; se a "
               "sensibilidade for limitação do equipamento, ele permanece útil para chuva moderada a forte até "

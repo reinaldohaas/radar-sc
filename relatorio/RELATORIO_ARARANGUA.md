@@ -199,6 +199,37 @@ O bloqueio pelo relevo e pela mata é fixo e não muda entre horários. Se as im
 3. **Radome molhado.** Com chuva sobre o radar, a água no radome atenua o sinal em todas as direções, tipicamente alguns dB em banda X. Somado à sensibilidade já baixa (seção 2.2), isso some com a chuva moderada a dezenas de quilômetros.
 4. **Sensibilidade.** A 76 km, onde fica Laguna, só aparecem ecos acima de ~45 dBZ. Num dia de chuva forte, a imagem mostra a célula intensa e quase nada em volta. No mesmo lugar, um dia de chuva moderada parece "sem eco".
 
+### 3.2 Um volume, raio a raio: 19/11/2026, 17:16 UTC
+
+Classificação dos raios desse volume (`raios_bloqueados.py`; linhas para o Google Earth em `kml/raios_20261119_1716_05.kml` e `_14.kml`):
+
+| Classe | 0,5° | 1,4° |
+|---|---|---|
+| Raios com chuva no TH | 154 | 137 |
+| Apagados pelo filtro de clutter (chuva no TH, < 20% dela no DBZH) | 30 | 9 |
+| Sem eco, com os vizinhos com chuva, e bloqueio simulado ≥ 50% | 21 | 5 |
+| Sem eco, com os vizinhos com chuva, sem bloqueio simulado | 7 | 17 |
+| Sombra de atenuação (a chuva termina logo após um núcleo ≥ 45 dBZ) | 10 | 6 |
+
+![Raios classificados, 0,5°](figuras/raios_20261119_1716_05.png)
+
+**As faixas radiais a noroeste e ao norte.** São chuva vista só em raios isolados: alguns passam pelos vãos da mata e dos obstáculos perto da antena, e os vizinhos são bloqueados ou apagados pelo filtro. Com o bloqueio fixo e o filtro somados, a chuva vira um "pente". Os 21 raios sem eco a 0,5° (O e NO) coincidem com o bloqueio simulado pela mata. Os 7 a 0,5° e os 17 a 1,4° sem bloqueio simulado indicam obstáculos que a simulação não vê, porque ficam a menos de 100 m da antena (seção 3.3).
+
+### 3.3 O local da antena: radar móvel ao lado do farol
+
+Uma foto do local mostra o que a simulação não alcança:
+- **O radar é uma unidade móvel.** O radome fica sobre um reboque, e a antena está a ~3–4 m do chão. Isso confirma a calibração da seção 4, que pôs a antena ~3 m acima do chão.
+- **O farol está a ~15 m da antena, a 147°.** Ele tem uns 3 m de diâmetro e uns 15 m de altura, mais os mastros. Visto da antena, ocupa ~12° de azimute (de ~141° a ~153°), e o topo fica a ~35–45° de elevação. Ele bloqueia esse setor em **todas** as elevações, e é a "sombra a partir de 146°" da seção 3.
+- **Poste e fios da rede elétrica passam ao lado do radome.** Um poste a poucos metros bloqueia por completo um setor de alguns graus, e os fios cruzam o feixe. São os candidatos para os setores 321–324° e 352–356°, que nem o MDS explica (seção 4.1), e para os raios isolados sem eco.
+- **A mata em volta tem a altura do radome ou mais**, como a calibração já indicava.
+
+**Consequência para a solução.** Por ser um radar móvel, a mudança de lugar sai muito mais barata que uma obra:
+- **No mesmo terreno:** afastar o reboque do farol e do poste. O farol bloqueia todos os ângulos até ~40° de elevação, e por isso o radar precisa ficar a pelo menos ~50–100 m dele, num ponto sem fios por perto.
+- **Erguer o reboque:** pô-lo numa plataforma ou torre baixa já tira a antena da sombra do poste e dos fios e de parte da mata. A antena só fica totalmente livre a oeste com ~25 m (seção 5).
+- **Mudar de lugar:** como é móvel, ele pode ir para uma posição mais alta e livre, como o Morro das Antenas, sem obra civil grande, só com energia e comunicação.
+
+Para posicionar o reboque, é preciso medir no local o azimute e a distância do poste e de cada fio, a partir da antena. Com eles, o mesmo cálculo da seção 4 diz quantos metros de afastamento bastam.
+
 ## 4. Simulação do bloqueio
 
 Método: bloqueio parcial do feixe (Bech et al., 2003), com Terra de raio efetivo 4/3, feixe de 2,2° e bloqueio acumulado ao longo do raio.
@@ -388,6 +419,7 @@ Scripts em `radar-sc/`:
 | `chuva_ponto.py --lat --lon --nome --data --das --ate` | taxa de chuva num ponto pelo radar (R(Z) e R(KDP)), série e mapa em `chuva/` |
 | `analise_polarimetrica.py` | bloqueio pela autoconsistência Z–ΦDP, ZDR por azimute e sensibilidade por distância (`polarimetria_azimute.csv`, `sensibilidade_alcance.csv`, `v3_polarimetria.png`) |
 | `mapa_altura_superficie.py` | altura da mata e das construções (MDS − MDT) com correção das falésias (`v3_altura_superficie.png`, `mds_altura_pontos.csv`) |
+| `raios_bloqueados.py ARQUIVO.hdf --elev 0.5` | classifica os raios de um volume (filtro, bloqueio, atenuação); figura, CSV e KML |
 | `setores_por_volume.py` | raios apagados pelo filtro, sombras de atenuação e chuva sobre o radar, volume a volume (`setores_por_volume.csv`, `v3_setores_por_volume.png`) |
 | `analise_mds.py` | versão 3: MDS do SIGSC, calibração, setores, prédios e torres (`mds_*.csv`, `v3_*.png`) |
 | `figuras_relatorio_v2.py` | figuras e `sensibilidade_v2.csv` (versão 2, MDT) |
