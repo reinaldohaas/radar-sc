@@ -1,7 +1,77 @@
 # Radar meteorológico de Araranguá: diagnóstico, bloqueios do feixe e posição alternativa
 
+**Autor:** Reinaldo Haas. Análises e scripts desenvolvidos com auxílio do Claude (Anthropic).
+
 Versão 3, 20/11/2026. Relevo: **MDT e MDS de 1 m do SIGSC** (MDT das folhas SH-22-X-B-IV-3, SH-22-X-A-VI-4 e SH-22-X-B-IV-1; MDS das folhas B-IV-3 e B-IV-1, levantamento de 2010–2012) e SRTM fora delas.
 Dados: volumes do FTP da Defesa Civil de SC, de 16/11 a 20/11/2026 (7 para a validação do bloqueio; 47 para a polarimetria e a sensibilidade).
+
+## Introdução: como este estudo começou
+
+Este trabalho começou em 19/11/2026. Houve relatos de chuva forte no sul de Santa Catarina, e tentei usar os dados do radar de Araranguá, publicados no FTP da Defesa Civil, para verificar essas chuvas e os padrões de precipitação na região. Era um uso simples, o mesmo que se espera de qualquer radar meteorológico: localizar as células, estimar a intensidade e acompanhar o deslocamento. Os dados não permitiram fazer isso.
+
+Já nas primeiras imagens, o que o radar mostrava não fazia sentido:
+- **Setores inteiros sem eco** a oeste e a noroeste, na direção do interior e da Serra Geral, justamente de onde vem boa parte dos sistemas.
+- **Chuva em forma de "pente":** faixas radiais estreitas, com raios cheios ao lado de raios vazios. Num mesmo setor, a aparência mudava de um volume para o outro e de um dia para o outro.
+- **Um disco saturado** de ~74 dBZ em volta do radar, até ~2 km, em todas as direções e com qualquer tempo.
+- **Ecos fixos e fortes** na direção da cidade de Araranguá e da Serra Geral, que pareciam chuva sem ser.
+- **Velocidade radial sem nenhuma coerência,** inclusive dentro da chuva.
+- **Chuva fraca e moderada praticamente ausente** além de 20–30 km. Os núcleos fortes apareciam isolados, sem a chuva estratiforme em volta.
+- **Lacunas de dezenas de minutos** entre os volumes publicados.
+
+Na tentativa de verificar a chuva forte de 20/11 em Laguna, a 76 km do radar, os problemas apareceram todos juntos:
+- faltavam os volumes justamente do horário em que a célula chegava à cidade;
+- àquela distância, o radar só vê ecos acima de ~45 dBZ (~25 mm/h);
+- os pluviômetros do Cemaden no município estavam sem dados.
+
+Não foi possível dizer quanto choveu. Um pesquisador do INPE já havia tentado usar o mesmo radar e chegado à mesma conclusão: os dados pareciam "totalmente inconsistentes".
+
+A partir daí, o estudo passou a investigar a causa de cada defeito. Isso envolveu:
+- os metadados e as variáveis dos volumes ODIM;
+- a qualidade de cada variável por elevação;
+- a simulação do bloqueio do feixe com o relevo e a vegetação de 1 m do SIGSC;
+- a comparação com a especificação publicada pelo fabricante;
+- a análise volume a volume dos raios sem eco;
+- uma foto do local, que mostrou o radar móvel ao lado do farol e de um poste da rede elétrica.
+
+### Os erros encontrados
+
+1. **PRF errada para banda X.** Com 400/267 Hz, a velocidade máxima medida é de 3,2 m/s por PRF, menor que a largura espectral da própria chuva. A velocidade sai aleatória (seção 2.1).
+2. **Filtro de clutter apagando chuva.** O filtro Doppler depende dessa velocidade aleatória e remove raios inteiros de chuva: em mediana, 44% dos raios com chuva a 0,5°. É a principal causa do "pente" e dos setores que mudam de um dia para o outro (seções 2 e 3.1).
+3. **Sensibilidade muito abaixo da especificação.** O radar detecta só ~41 dBZ a 50 km, contra os 18 dBZ especificados pelo fabricante para um protótipo de potência menor: 22–29 dB pior. A chuva fraca e moderada desaparece com a distância, e as variáveis polarimétricas ficam ruidosas (seção 2.2).
+4. **ZDR descalibrado,** negativo em chuva, e **zona cega saturada** de 2,2 km, sem o pulso de preenchimento que o projeto prevê (seções 2.2 e 4.2).
+5. **Antena baixa, num reboque, cercada de obstáculos.**
+   - O farol, a 15 m, bloqueia ~141–153° em todas as elevações.
+   - O poste e os fios da rede elétrica cortam o feixe.
+   - A mata do Morro dos Conventos bloqueia 70–90% do feixe de 0,5° a oeste (seções 3.3, 4 e 4.1).
+6. **Clutter fixo** da cidade e da Serra Geral, visto por uma abertura na mata (seção 3).
+7. **Atenuação em banda X e radome molhado,** que apagam o que fica atrás das células fortes e reduzem o sinal quando chove sobre o radar (seção 3.1).
+8. **Falhas operacionais:**
+   - volumes ausentes no FTP em 37% do tempo, num período de 8 horas;
+   - posição e altitude erradas nos metadados;
+   - possível desvio de azimute de 2–4° (seções 1 e 4.1).
+
+### Utilidade dos dados hoje
+
+Do jeito que o radar está configurado e instalado, **os dados têm pouca utilidade**:
+- **Velocidade radial:** inútil.
+- **Refletividade filtrada (DBZH):** perde quase metade dos raios com chuva.
+- **Refletividade total (TH):**
+  - só mostra chuva moderada a forte perto do radar;
+  - nada a oeste em baixa elevação;
+  - nada no setor do farol.
+- **ZDR e KDP:** não servem sem calibração e com esse nível de sinal-ruído.
+- **Estimativa de chuva:** não é possível com confiança além de ~20–30 km. Em parte dos horários, nem há dados.
+
+O radar serve, no máximo, para indicar a presença de núcleos convectivos fortes, sobretudo a leste, sobre o mar, e ao sul. Não serve para quantificar a chuva nem para acompanhar sistemas que chegam do oeste.
+
+**Isso não é inevitável.** Quase todos os problemas são de configuração, calibração e instalação, e não de projeto do equipamento. O caminho:
+- corrigir a PRF;
+- fazer o fabricante verificar a sensibilidade;
+- calibrar o ZDR e o azimute;
+- reposicionar o reboque longe do farol e da rede elétrica;
+- elevar a antena.
+
+Com isso, o radar pode cumprir o papel para o qual foi adquirido. As seções seguintes detalham cada problema, as evidências e as soluções.
 
 ## Os dados são inconsistentes? Tem solução?
 

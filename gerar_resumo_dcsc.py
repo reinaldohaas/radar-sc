@@ -86,7 +86,7 @@ def main():
                             author="Reinaldo Haas", subject="Diagnóstico do radar meteorológico de Araranguá (SC)")
     s = []
     s += [P("Radar meteorológico de Araranguá", tit),
-          P("Diagnóstico dos dados, bloqueios do feixe e recomendações<br/>Resumo para a Defesa Civil de Santa Catarina — 20/11/2026", sub),
+          P("Diagnóstico dos dados, bloqueios do feixe e recomendações<br/>Resumo para a Defesa Civil de Santa Catarina — 20/11/2026<br/>Autor: Reinaldo Haas", sub),
           Spacer(1, 10)]
 
     s += [P("1. Contexto", h1),
