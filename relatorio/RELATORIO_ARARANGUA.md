@@ -18,7 +18,7 @@ Já nas primeiras imagens, o que o radar mostrava não fazia sentido:
 - **Chuva fraca e moderada praticamente ausente** além de 20–30 km. Os núcleos fortes apareciam isolados, sem a chuva estratiforme em volta.
 - **Lacunas de dezenas de minutos** entre os volumes publicados.
 
-Na tentativa de verificar a chuva forte de 20/11 em Laguna, a 76 km do radar, os problemas apareceram todos juntos:
+Os problemas apareceram todos juntos na tentativa de verificar a chuva extrema de 20/11 em Laguna, a 76 km do radar. Essa chuva foi a chegada da piscina fria de um CCM com número excepcional de descargas (ver o exemplo adiante):
 - faltavam os volumes justamente do horário em que a célula chegava à cidade;
 - àquela distância, o radar só vê ecos acima de ~45 dBZ (~25 mm/h);
 - os pluviômetros do Cemaden no município estavam sem dados.
@@ -90,12 +90,23 @@ Um pesquisador do INPE relatou que tentou usar os dados deste radar e os achou t
 | Posição e altitude erradas nos arquivos | metadado com a posição 21 m deslocada e altitude de 46 m; a antena fica a ~71 m (seção 1) | corrigir a configuração do site | operador | baixa |
 | Azimutes possivelmente deslocados | a janela simulada fica 2–4° antes da observada (seção 4.1) | varredura do Sol | operador | baixa |
 
-**Exemplo (Laguna, 20/11, 8–9 h).** Laguna fica a 76 km do radar.
-- A essa distância, o radar só detecta ecos acima de ~45 dBZ, o equivalente a ~25 mm/h.
-- O FTP não tem volumes entre 08:21 e 08:57, justamente quando uma célula de 48–53 dBZ chegava à cidade.
-- Os 5 pluviômetros do Cemaden em Laguna estavam sem dados naquele dia.
+### Exemplo: Laguna, 20/11/2026, 8–9 h
 
-Resultado: não houve como saber quanto choveu (`chuva_ponto.py`, `chuva/Laguna_2026-11-20.*`).
+Em Laguna foi relatada **chuva extrema** entre 8 e 9 h. Ela corresponde à chegada da **piscina fria** (*cold pool*) de um **Complexo Convectivo de Mesoescala (CCM)**. Nas imagens de satélite, o CCM aparece com um número excepcional de descargas elétricas. É exatamente o tipo de evento que um radar costeiro deveria acompanhar.
+
+![Refletividade do radar de Araranguá na chegada da chuva a Laguna](figuras/laguna_20261120_refletividade.png)
+
+O que o radar de Araranguá mostra:
+- **08:18:** chuva de 40–55 dBZ ao sul de Laguna, numa faixa ao longo da costa entre Jaguaruna e Laguna, além da área de chuva sobre o mar a leste do radar.
+- **08:57:** um núcleo de **55–65 dBZ** a 1,4°, encostado em Laguna pelo sul, com ~15 × 20 km.
+
+O que ele não mostra:
+- **O intervalo decisivo.** O FTP não tem volumes entre 08:21 e 08:57, justamente quando o núcleo entrava na cidade.
+- **A chuva estratiforme e a frente de rajada.** Laguna fica a 76 km, onde o radar só detecta ecos acima de ~45 dBZ (~25 mm/h). A chuva estratiforme do CCM e a linha fina da frente de rajada da piscina fria, tipicamente com 10–30 dBZ, ficam invisíveis. O radar mostra só o núcleo, isolado.
+- **O interior.** As faixas radiais a noroeste e a oeste, o "pente", são o bloqueio e o filtro de clutter: o CCM vinha do continente, e o radar não o acompanhou até a costa.
+- **A intensidade real.** Em banda X, a chuva intensa entre o radar e Laguna atenua o sinal, e o ΦDP é ruidoso demais para corrigir isso.
+
+Também não havia medida em solo: os 5 pluviômetros do Cemaden em Laguna estavam sem dados naquele dia. Resultado: não houve como saber quanto choveu, nem acompanhar a evolução do sistema pelo radar (`chuva_ponto.py`, `figura_laguna.py`, `chuva/Laguna_2026-11-20.*`).
 
 **Então, tem solução?** Sim, e quase tudo sai barato:
 - **Configuração (sem obra):** PRF, envio ao FTP, metadados, calibração do ZDR e varredura do Sol resolvem a maior parte das inconsistências que um usuário percebe.

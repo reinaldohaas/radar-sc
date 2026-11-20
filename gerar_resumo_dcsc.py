@@ -138,9 +138,14 @@ def main():
           ])]
 
     s += [KeepTogether([P("Exemplo: Laguna, 20/11/2026, 8–9 h", ParagraphStyle("h3", parent=h1, fontSize=10, spaceBefore=6)),
-          P("Laguna fica a 76 km do radar. A essa distância só são detectados ecos acima de ~45 dBZ (~25 mm/h); "
-            "faltaram volumes entre 08:21 e 08:57, justamente quando uma célula de 48–53 dBZ chegava à cidade; e os "
-            "5 pluviômetros do Cemaden no município estavam sem dados. Não foi possível saber quanto choveu.")])]
+          P("Em Laguna foi relatada chuva extrema, que corresponde à chegada da piscina fria de um Complexo "
+            "Convectivo de Mesoescala (CCM), visto no satélite com número excepcional de descargas. Laguna fica a 76 km "
+            "do radar, onde só são detectados ecos acima de ~45 dBZ (~25 mm/h): o radar mostra apenas o núcleo de "
+            "55–65 dBZ, sem a chuva estratiforme nem a frente de rajada. Faltaram volumes entre 08:21 e 08:57, "
+            "justamente quando o núcleo entrava na cidade, e os 5 pluviômetros do Cemaden estavam sem dados. Não foi "
+            "possível saber quanto choveu.")]),
+          figura(FIG / "laguna_20261120_refletividade.png", 11, "Refletividade (TH) do radar de Araranguá às 08:18 e "
+                 "08:57 de 20/11/2026, a 0,5° e 1,4°. Não há volumes entre 08:21 e 08:57.")]
 
     s += [KeepTogether([P("4. Problemas e soluções", h1),
           tabela([
