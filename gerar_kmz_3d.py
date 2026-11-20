@@ -171,17 +171,18 @@ def cor_kml(f, alfa):
     return f"{int(alfa):02x}{int(b * 255):02x}{int(g * 255):02x}{int(r * 255):02x}"
 
 
-def feixe_kml(nome, h_antena, elev, pbb, az, visivel, borda=None, ident=""):
+def feixe_kml(nome, h_antena, elev, pbb, az, visivel, borda=None, ident="", origem=None, alcance=None):
     """Superfície do feixe (centro, ou borda inferior com borda=-1) até R_FEIXE, um quadrilátero por grau."""
     ang = elev + (borda or 0) * FEIXE_GRAUS / 2
-    rs = np.array([100.0, 500.0, 1000.0, 1500.0, 2000.0, 2500.0, R_FEIXE])
+    origem = origem or ATUAL
+    rs = np.linspace(100.0, alcance or R_FEIXE, 8)
     Re = 8495e3
     h = np.sqrt(rs ** 2 + Re ** 2 + 2 * rs * Re * math.sin(math.radians(ang))) - Re + h_antena
     marcas = []
     for i, a in enumerate(az):
         a0, a1 = a - 0.5, a + 0.5
-        ida = [destino(*ATUAL, a0, r) for r in rs]
-        volta = [destino(*ATUAL, a1, r) for r in rs[::-1]]
+        ida = [destino(*origem, a0, r) for r in rs]
+        volta = [destino(*origem, a1, r) for r in rs[::-1]]
         coords = [(lo, la, hh) for (la, lo), hh in zip(ida, h)] + [(lo, la, hh) for (la, lo), hh in zip(volta, h[::-1])]
         coords.append(coords[0])
         txt = " ".join(f"{lo:.7f},{la:.7f},{hh:.2f}" for lo, la, hh in coords)
@@ -213,7 +214,39 @@ def elementos_radar(pbb, offset=0.0):
         feixe_kml("Torre 25 m: feixe 0,5° — centro", CHAO + H_TORRE, 0.5, pbb["torre_05"], az, False, ident="t05c"),
         feixe_kml("Torre 25 m: feixe 0,5° — borda inferior", CHAO + H_TORRE, 0.5, pbb["torre_05"], az, False, borda=-1, ident="t05b"),
     ]
-    return "".join(pts) + torre + "".join(pastas)
+    return "".join(pts) + torre + "".join(pastas) + propostas_e_obstaculos(offset)
+
+
+def propostas_e_obstaculos(offset):
+    """Posições propostas (com os feixes de 0,5° e 1,4° coloridos pelo bloqueio a 30 km) e obstáculos medidos."""
+    cache = AQUI / "dem" / "pbb_posicoes_mds.npz"
+    if not cache.exists():
+        return ""
+    from posicoes_obstaculos import OBSTACULOS, POSICOES
+    d = np.load(cache)
+    az = d["az"]
+    nomes = list(POSICOES)
+    pastas = []
+    for k in (1, 2):
+        la, lo, h = POSICOES[nomes[k]]
+        chao = float(d[f"p{k}_chao"]) + offset
+        corpo = (f"<Placemark><name>{nomes[k]}</name><Point><altitudeMode>absolute</altitudeMode><extrude>1</extrude>"
+                 f"<coordinates>{lo},{la},{chao + h}</coordinates></Point></Placemark>"
+                 + feixe_kml("Feixe 0,5° — centro (cor = bloqueio a 30 km)", chao + h, 0.5, d[f"p{k}_05_30"], az, True,
+                             ident=f"p{k}05c", origem=(la, lo), alcance=5000)
+                 + feixe_kml("Feixe 0,5° — borda inferior", chao + h, 0.5, d[f"p{k}_05_30"], az, False, borda=-1,
+                             ident=f"p{k}05b", origem=(la, lo), alcance=5000)
+                 + feixe_kml("Feixe 1,4° — centro", chao + h, 1.4, d[f"p{k}_14_30"], az, False,
+                             ident=f"p{k}14c", origem=(la, lo), alcance=5000))
+        pastas.append(f"<Folder><name>{nomes[k]}</name><visibility>0</visibility>{corpo}</Folder>")
+    obs = []
+    for n, la, lo, h, txt in OBSTACULOS:
+        if la is None:
+            continue
+        obs.append(f"<Placemark><name>{n}</name><description>{txt}</description><Style><IconStyle><color>ffff00aa</color>"
+                   f"</IconStyle></Style><Point><coordinates>{lo},{la},0</coordinates></Point></Placemark>")
+    return (f"<Folder><name>Posições propostas</name>{''.join(pastas)}</Folder>"
+            f"<Folder><name>Obstáculos</name>{''.join(obs)}</Folder>")
 
 
 def tour(offset):

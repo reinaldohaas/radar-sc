@@ -467,6 +467,48 @@ Nas três posições do Morro dos Conventos, mesmo com torre de 25 m, sobra uma 
 
 ![Morro dos Conventos no MDT de 1 m](figuras/v2_mapa_mdt.png)
 
+### 5.1 Posições, obstáculos e teste das duas propostas
+
+**Coordenadas** (WGS84). Altitudes do SIGSC: MDT é o terreno e MDS é a superfície, com mata e construções de 2010–2012. Distância e azimute são medidos a partir da antena atual (`posicoes_obstaculos.csv`).
+
+| # | Posição ou obstáculo | Latitude | Longitude | Terreno (MDT) | Superfície (MDS) | Altura do objeto | Distância / azimute |
+|---|---|---|---|---|---|---|---|
+| — | **Radar atual** (reboque, antena ~3 m) | -28,934548 | -49,362490 | 67,7 m | 71,1 m | 3 m | — |
+| — | **Proposta 1: topo do Morro dos Conventos** (torre de 25 m) | -28,937250 | -49,367620 | 69,2 m | 74,9 m | 25 m | 583 m / 239° |
+| — | **Proposta 2: Morro das Antenas** (torre de 25 m) | -28,843869 | -49,398756 | 255,1 m | 255,6 m | 25 m | 10,66 km / 341° |
+| 1 | Farol do Morro dos Conventos | -28,934662 | -49,362405 | 68,5 m | 72,5 m | ~15 m | 15 m / 147° |
+| 2 | Poste e fios da rede elétrica | a medir | a medir | | | | ao lado do radome |
+| 3 | Crista com mata (setor 321–324°) | -28,929587 | -49,366918 | 65,7 m | 69,9 m | 10–17 m | 699 m / 322° |
+| 4 | Colina a NW, com mata | -28,925236 | -49,370698 | 67,4 m | 75,4 m | 8–15 m | 1,31 km / 322° |
+| 5 | Vila (setor 352–356°) | -28,922000 | -49,363759 | 1,7 m | 1,8 m | até ~12 m | 1,40 km / 355° |
+| 6 | Mata do topo do Morro dos Conventos | -28,937250 | -49,367620 | 69,2 m | 74,9 m | ~5–10 m | 583 m / 239° |
+| 7 | Morro com mata a oeste | -28,939924 | -49,471553 | 66,9 m | 81,8 m | ~15 m | 10,65 km / 267° |
+| 8 | Prédio mais alto de Araranguá (271°) | -28,932546 | -49,489633 | 2,7 m | 40,6 m | ~38 m | 12,40 km / 271° |
+| 9 | Prédio mais alto de Araranguá (284°) | -28,912340 | -49,464070 | 3,2 m | 43,9 m | ~40 m | 10,21 km / 284° |
+| 10 | Torres e mata do Morro das Antenas | em volta da proposta 2 | | 255 m | até ~276 m | até ~21 m | 250 m a NNE da proposta 2 |
+
+**Teste das posições.** A simulação usa o MDS + 6 m de mata, por azimute, a cada 1° (`dem/pbb_posicoes_mds.npz`):
+
+| Posição | 0,5°, média a 10 / 30 / 60 km | 0,5°, oeste a 30 / 60 km | 1,4°, média a 30 / 60 km | 1,4°, oeste a 30 / 60 km | Raios ≥ 50% bloqueados a 30 km (0,5° / 1,4°) |
+|---|---|---|---|---|---|
+| Atual (antena ~3 m) | 31% / 37% / 45% | 72% / 90% | 18% / 21% | 39% / 51% | 107 / 62 |
+| **Proposta 1** (topo do Conventos, 25 m) | 3% / 14% / 32% | 17% / 71% | 0% / 8% | 0% / 25% | 5 / 0 |
+| **Proposta 2** (Morro das Antenas, 25 m) | 4% / 9% / 32% | 15% / 76% | 1% / 10% | 1% / 29% | 17 / 3 |
+
+![Posições, obstáculos e raios bloqueados (planta)](figuras/v3_posicoes_planta.png)
+
+![Vista 3D das posições e dos obstáculos](figuras/v3_mapa3d_posicoes.png)
+
+**O que o teste mostra:**
+- **As duas propostas eliminam o bloqueio próximo.** A 30 km, o feixe de 1,4° fica livre em praticamente todas as direções, e o de 0,5° passa de 107 raios muito bloqueados para 5 na proposta 1 e 17 na proposta 2. O que sobra a 60 km a oeste (71–76% a 0,5°) é a Serra Geral, igual para as duas. Nessa direção, o produto deve usar 1,4° ou mais.
+- **Proposta 1 (topo do Conventos).** O único setor bloqueado a 30 km é o de 342–346°, onde fica o próprio Morro das Antenas, a ~11 km. Fica a 583 m do radar atual: o reboque pode ser levado para lá numa torre ou plataforma de 25 m, longe do farol e da rede elétrica.
+- **Proposta 2 (Morro das Antenas).** É a melhor a 30 km em média (9% a 0,5°), mas há dois setores bloqueados:
+  - **15–30°:** estruturas de ~21 m (em 2012) a 250 m a NNE, provavelmente as torres de comunicação existentes ou mata alta. Com o crescimento da mata, passam da antena de 25 m. Ali é preciso uma torre de **30–35 m**, ou um ponto mais afastado delas.
+  - **312–322°:** relevo, a mais de 10 km.
+- **O teste confirma a escolha:** como o radar é móvel, a proposta 1 é a de menor custo, porque fica no mesmo morro, perto da energia e da comunicação atuais. A proposta 2 dá a melhor cobertura, mas exige torre mais alta e acerto com os donos das torres existentes.
+
+No Google Earth, o KMZ (`kml/morro_conventos_3d.kmz`) tem as pastas "Posições propostas", com os feixes de 0,5° e 1,4° de cada proposta coloridos pelo bloqueio, e "Obstáculos", com os pontos numerados da tabela acima.
+
 ## 6. Limitações
 
 - O MDS é de 2010–2012: a mata cresceu, e o crescimento (6 m no ajuste) é uniforme na simulação. Construções posteriores, inclusive a torre do radar, não aparecem nele.
@@ -500,6 +542,7 @@ Scripts em `radar-sc/`:
 | `chuva_ponto.py --lat --lon --nome --data --das --ate` | taxa de chuva num ponto pelo radar (R(Z) e R(KDP)), série e mapa em `chuva/` |
 | `analise_polarimetrica.py` | bloqueio pela autoconsistência Z–ΦDP, ZDR por azimute e sensibilidade por distância (`polarimetria_azimute.csv`, `sensibilidade_alcance.csv`, `v3_polarimetria.png`) |
 | `mapa_altura_superficie.py` | altura da mata e das construções (MDS − MDT) com correção das falésias (`v3_altura_superficie.png`, `mds_altura_pontos.csv`) |
+| `posicoes_obstaculos.py` | coordenadas do radar, das propostas e dos obstáculos; bloqueio por azimute nas três posições; planta e vista 3D |
 | `raios_bloqueados.py ARQUIVO.hdf --elev 0.5` | classifica os raios de um volume (filtro, bloqueio, atenuação); figura, CSV e KML |
 | `setores_por_volume.py` | raios apagados pelo filtro, sombras de atenuação e chuva sobre o radar, volume a volume (`setores_por_volume.csv`, `v3_setores_por_volume.png`) |
 | `analise_mds.py` | versão 3: MDS do SIGSC, calibração, setores, prédios e torres (`mds_*.csv`, `v3_*.png`) |
