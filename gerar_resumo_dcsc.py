@@ -203,7 +203,10 @@ def main():
                  "longitude (MDS do SIGSC). Cores escuras: maior fração do feixe bloqueada."),
           figura(FIG / "v3_mapa3d_posicoes.png", 16.5, "Relevo e superfície do SIGSC em 3D: posição atual (vermelho), "
                  "propostas (azul) e obstáculos (roxo), com as coordenadas. Atual: −28,93455, −49,36249; proposta 1 "
-                 "(topo do Morro dos Conventos): −28,93725, −49,36762; proposta 2 (Morro das Antenas): −28,84387, −49,39876.")]
+                 "(topo do Morro dos Conventos): −28,93725, −49,36762; proposta 2 (Morro das Antenas): −28,84387, −49,39876."),
+          figura(FIG / "v3_mapa3d_serra_geral.png", 16.5, "Do litoral à Serra Geral (SRTM, cores de relevo): posições "
+                 "do radar e, em amarelo, o centro do feixe de 0,5° da posição atual até tocar o relevo. A oeste, ele "
+                 "encontra a escarpa da Serra a 53–64 km; a noroeste, os morros a 35–50 km; a 340°, o Morro das Antenas.")]
 
     s += [P("6. Recomendações, em ordem de prioridade", h1),
           ListFlowable([ListItem(P(t), leftIndent=14) for t in [

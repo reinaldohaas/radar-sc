@@ -546,6 +546,21 @@ Nas três posições do Morro dos Conventos, mesmo com torre de 25 m, sobra uma 
 
 ![Vista 3D das posições e dos obstáculos](figuras/v3_mapa3d_posicoes.png)
 
+**Do litoral à Serra Geral.** O centro do feixe de 0,5° da posição atual, a ~71 m de altitude, foi seguido raio a raio sobre o SRTM até tocar o relevo. Esse cálculo considera só o relevo, sem a mata perto da antena:
+
+| Azimute | Onde o centro do feixe de 0,5° toca o relevo |
+|---|---|
+| 230–245° (SW, Sombrio e Praia Grande) | não toca até 80 km |
+| 250–290° (W, Turvo, Jacinto Machado, Timbé do Sul) | escarpa da Serra Geral, a 53–64 km (700–1.050 m) |
+| 295–335° (NW, Criciúma, Urussanga, Lauro Müller) | morros e sopé da Serra, a 35–50 km (520–710 m) |
+| 340° | Morro das Antenas, a 10 km |
+
+Por isso, mesmo com a antena livre da mata, a 0,5° o radar só vê até ~50–60 km a oeste. Além disso só restam a elevação de 1,4° e as mais altas, que passam sobre a Serra.
+
+![Do litoral à Serra Geral em 3D](figuras/v3_mapa3d_serra_geral.png)
+
+No Google Earth (`kml/morro_conventos_3d.kmz`), a pasta "Visadas do feixe de 0,5° até a Serra Geral" mostra essas linhas sobre o relevo e as imagens do Google, a cada 5° de azimute. A pasta tem também uma vista pronta do radar para a Serra. Os nomes de todos os locais (radar, propostas e obstáculos) trazem as coordenadas.
+
 **O que o teste mostra:**
 - **As duas propostas eliminam o bloqueio próximo.** A 30 km, o feixe de 1,4° fica livre em praticamente todas as direções, e o de 0,5° passa de 107 raios muito bloqueados para 5 na proposta 1 e 17 na proposta 2. O que sobra a 60 km a oeste (71–76% a 0,5°) é a Serra Geral, igual para as duas. Nessa direção, o produto deve usar 1,4° ou mais.
 - **Proposta 1 (topo do Conventos).** O único setor bloqueado a 30 km é o de 342–346°, onde fica o próprio Morro das Antenas, a ~11 km. Fica a 583 m do radar atual: o reboque pode ser levado para lá numa torre ou plataforma de 25 m, longe do farol e da rede elétrica.
@@ -589,6 +604,8 @@ Scripts em `radar-sc/`:
 | `chuva_ponto.py --lat --lon --nome --data --das --ate` | taxa de chuva num ponto pelo radar (R(Z) e R(KDP)), série e mapa em `chuva/` |
 | `analise_polarimetrica.py` | bloqueio pela autoconsistência Z–ΦDP, ZDR por azimute e sensibilidade por distância (`polarimetria_azimute.csv`, `sensibilidade_alcance.csv`, `v3_polarimetria.png`) |
 | `mapa_altura_superficie.py` | altura da mata e das construções (MDS − MDT) com correção das falésias (`v3_altura_superficie.png`, `mds_altura_pontos.csv`) |
+| `mapa3d_serra_geral.py` | mapa 3D do litoral à Serra Geral (SRTM, cores hipsométricas) com as posições e o feixe de 0,5° |
+| `figuras_posicoes_latlon.py` | bloqueio por posição e mapa 3D do Morro dos Conventos, com lat/lon |
 | `figura_polarimetria_volume.py ARQUIVO.hdf` | TH, ZDR, ΦDP, KDP, RhoHV e SNR de um volume; ΦDP medido x esperado; diagnósticos |
 | `posicoes_obstaculos.py` | coordenadas do radar, das propostas e dos obstáculos; bloqueio por azimute nas três posições; planta e vista 3D |
 | `raios_bloqueados.py ARQUIVO.hdf --elev 0.5` | classifica os raios de um volume (filtro, bloqueio, atenuação); figura, CSV e KML |

@@ -201,7 +201,7 @@ def elementos_radar(pbb, offset=0.0, propostas_visiveis=False):
     CHAO = CHAO_RADAR + offset
     pts = []
     for (rot, h) in (("Antena atual (~3 m acima do chão)", H_ANTENA), ("Antena na torre de 25 m", H_TORRE)):
-        pts.append(f"<Placemark><name>{rot}</name><Point><altitudeMode>absolute</altitudeMode><extrude>1</extrude>"
+        pts.append(f"<Placemark><name>{rot} ({lat:.5f}, {lon:.5f})</name><Point><altitudeMode>absolute</altitudeMode><extrude>1</extrude>"
                    f"<coordinates>{lon},{lat},{CHAO + h}</coordinates></Point></Placemark>")
     torre = (f"<Placemark><name>Torre de 25 m</name><Style><LineStyle><color>ff0000ff</color><width>4</width></LineStyle></Style>"
              f"<LineString><altitudeMode>absolute</altitudeMode><coordinates>{lon},{lat},{CHAO} {lon},{lat},{CHAO + H_TORRE}"
@@ -230,7 +230,7 @@ def propostas_e_obstaculos(offset, visiveis=False):
     for k in (1, 2):
         la, lo, h = POSICOES[nomes[k]]
         chao = float(d[f"p{k}_chao"]) + offset
-        corpo = (f"<Placemark><name>{nomes[k]}</name><Point><altitudeMode>absolute</altitudeMode><extrude>1</extrude>"
+        corpo = (f"<Placemark><name>{nomes[k]} ({la:.5f}, {lo:.5f})</name><Point><altitudeMode>absolute</altitudeMode><extrude>1</extrude>"
                  f"<coordinates>{lo},{la},{chao + h}</coordinates></Point></Placemark>"
                  + feixe_kml("Feixe 0,5° — centro (cor = bloqueio a 30 km)", chao + h, 0.5, d[f"p{k}_05_30"], az, True,
                              ident=f"p{k}05c", origem=(la, lo), alcance=5000)
@@ -243,10 +243,35 @@ def propostas_e_obstaculos(offset, visiveis=False):
     for n, la, lo, h, txt in OBSTACULOS:
         if la is None:
             continue
-        obs.append(f"<Placemark><name>{n}</name><description>{txt}</description><Style><IconStyle><color>ffff00aa</color>"
+        obs.append(f"<Placemark><name>{n} ({la:.5f}, {lo:.5f})</name><description>{txt}</description><Style><IconStyle><color>ffff00aa</color>"
                    f"</IconStyle></Style><Point><coordinates>{lo},{la},0</coordinates></Point></Placemark>")
-    return (f"<Folder><name>Posições propostas</name>{''.join(pastas)}</Folder>"
+    return (visadas_serra(offset) + f"<Folder><name>Posições propostas</name>{''.join(pastas)}</Folder>"
             f"<Folder><name>Obstáculos</name>{''.join(obs)}</Folder>")
+
+
+def visadas_serra(offset):
+    """Centro do feixe de 0,5° da posição atual, de 230° a 340°, até tocar o relevo (SRTM), e uma vista para oeste."""
+    from relevo import Relevo
+    rel = Relevo(*ATUAL, fino_km=1.0, largo_km=110)
+    Re = 8495e3
+    h_ant = CHAO_RADAR + H_ANTENA
+    marcas = []
+    for az in range(230, 341, 5):
+        ds = np.arange(200, 80001, 250.0)
+        h = np.sqrt(ds ** 2 + Re ** 2 + 2 * ds * Re * math.sin(math.radians(0.5))) - Re + h_ant
+        la, lo = destino(*ATUAL, float(az), ds)
+        zt = rel(la, lo, ds / 1000)
+        bate = np.flatnonzero(zt >= h)
+        k = int(bate[0]) if len(bate) else len(ds) - 1
+        coords = " ".join(f"{lo[i]:.6f},{la[i]:.6f},{h[i] + offset:.1f}" for i in range(0, k + 1, 4))
+        txt = f"toca o relevo a {ds[k] / 1000:.0f} km ({la[k]:.5f}, {lo[k]:.5f}; {zt[k]:.0f} m)" if len(bate) else "não toca até 80 km"
+        marcas.append(f"<Placemark><name>{az}°: {txt}</name><Style><LineStyle><color>ff00ffff</color><width>2</width>"
+                      f"</LineStyle></Style><LineString><altitudeMode>absolute</altitudeMode><coordinates>{coords}"
+                      f"</coordinates></LineString></Placemark>")
+    vista = (f"<Placemark><name>Vista: do radar para a Serra Geral</name><LookAt><longitude>{ATUAL[1] + 0.05}</longitude>"
+             f"<latitude>{ATUAL[0] - 0.02}</latitude><altitude>0</altitude><heading>285</heading><tilt>72</tilt>"
+             f"<range>45000</range></LookAt><Point><coordinates>{ATUAL[1]},{ATUAL[0]},0</coordinates></Point></Placemark>")
+    return (f"<Folder><name>Visadas do feixe de 0,5° até a Serra Geral</name>{vista}{''.join(marcas)}</Folder>")
 
 
 def tour(offset):
