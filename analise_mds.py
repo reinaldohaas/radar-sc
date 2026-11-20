@@ -184,7 +184,7 @@ def main():
             T, Rr = np.meshgrid(np.radians(az), d / 1000, indexing="ij")
             m = ax.pcolormesh(T, Rr, r[e] * 100, cmap="magma_r", vmin=0, vmax=100, shading="auto")
             ax.set_theta_zero_location("N"); ax.set_theta_direction(-1); ax.set_rlim(0, 60); ax.set_rticks([20, 40, 60])
-            ax.set_title(f"{nome}\ntorre 25 m, elevação {e}°", fontsize=10)
+            ax.set_title(f"{nome}\nlat {POS[nome][0]:.5f}, lon {POS[nome][1]:.5f}\ntorre 25 m, elevação {e}°", fontsize=10)
     fig.colorbar(m, ax=eixos, shrink=0.6, label="Potência do feixe bloqueada (%)")
     fig.suptitle(f"Torre de 25 m em cada posição: MDS 1 m do SIGSC (mata +{CRESC:.0f} m desde 2012), até 60 km", fontsize=12)
     fig.savefig(FIG / "v3_pbb_posicoes.png", bbox_inches="tight"); plt.close(fig)

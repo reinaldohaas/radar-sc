@@ -1,0 +1,10 @@
+indicador,valor
+gates de chuva 35–55 dBZ,203676
+SNR mediano (dB),8.627
+RhoHV mediano,0.939
+"ZDR mediano (dB; esperado +0,5 a +2)",0.000
+fração com ZDR < 0,0.489
+"ruído do ΦDP, mediana |ΦDP − suavizado| (°)",2.824
+KDP mediano medido (°/km),0.235
+KDP esperado pela refletividade (°/km),0.573
+fração com KDP < 0,0.191

@@ -83,10 +83,10 @@ def rodape(c, doc):
 def main():
     doc = SimpleDocTemplate(str(SAIDA), pagesize=A4, leftMargin=2 * cm, rightMargin=2 * cm, topMargin=1.8 * cm,
                             bottomMargin=1.8 * cm, title="Radar de Araranguá — resumo do diagnóstico",
-                            author="Reinaldo Haas", subject="Diagnóstico do radar meteorológico de Araranguá (SC)")
+                            author="Dr. Reinaldo Haas", subject="Diagnóstico do radar meteorológico de Araranguá (SC)")
     s = []
     s += [P("Radar meteorológico de Araranguá", tit),
-          P("Diagnóstico dos dados, bloqueios do feixe e recomendações<br/>Resumo para a Defesa Civil de Santa Catarina — 20/11/2026<br/>Autor: Reinaldo Haas", sub),
+          P("Diagnóstico dos dados, bloqueios do feixe e recomendações<br/>Resumo para a Defesa Civil de Santa Catarina — 20/11/2026<br/>Autor: Dr. Reinaldo Haas", sub),
           Spacer(1, 10)]
 
     s += [P("1. Contexto", h1),
@@ -94,7 +94,9 @@ def main():
             "inclusive pesquisadores do INPE, como fonte de dados inconsistentes. Este resumo apresenta o diagnóstico "
             "feito a partir dos volumes publicados no FTP da Defesa Civil (16 a 20/11/2026), da simulação do bloqueio "
             "do feixe com o modelo de terreno (MDT) e de superfície (MDS) de 1 m do SIGSC e da análise das variáveis "
-            "polarimétricas. O relatório técnico completo, com métodos, figuras e scripts, está no repositório "
+            "polarimétricas. O trabalho foi feito no âmbito do <b>Termo de Cooperação Técnica nº 007/SDC/2025</b> "
+            "entre a SDC e a UFSC (acesso aos dados do radar via FTP; atividades 1.2 e 2.1 do Plano de Ação). "
+            "O relatório técnico completo, com métodos, figuras e scripts, está no repositório "
             "<i>github.com/reinaldohaas/radar-sc</i> (relatorio/RELATORIO_ARARANGUA.md).")]
 
     s += [P("2. Conclusão principal", h1),
@@ -147,6 +149,30 @@ def main():
           figura(FIG / "laguna_20261120_refletividade.png", 11, "Refletividade (TH) do radar de Araranguá às 08:18 e "
                  "08:57 de 20/11/2026, a 0,5° e 1,4°. Não há volumes entre 08:21 e 08:57.")]
 
+    s += [KeepTogether([P("Investigação dos raios sem eco: 19/11/2026, 17:16 UTC", ParagraphStyle("h3b", parent=h1, fontSize=10, spaceBefore=6)),
+          P("Classificamos raio a raio um volume de 19/11, quando as imagens mostravam muitos setores sem eco. Dos 154 "
+            "raios com chuva a 0,5°, 30 foram apagados pelo filtro de clutter, 21 estão sem eco onde a simulação "
+            "prevê bloqueio pela mata (oeste e noroeste), 7 estão sem eco sem bloqueio simulado (obstáculos a menos de "
+            "100 m da antena: farol, poste e fios) e 10 são sombras de atenuação atrás de células fortes. As faixas "
+            "radiais (\"pente\") a noroeste resultam da soma do bloqueio fixo com o filtro.")]),
+          figura(FIG / "raios_20261119_1716_05.png", 15, "Volume de 19/11/2026, 17:16 UTC, 0,5°: TH com máscara de "
+                 "RhoHV, DBZH e raios classificados (vermelho: filtro; preto: bloqueio; cinza: sem eco sem bloqueio "
+                 "simulado; roxo: atenuação).")]
+
+    s += [KeepTogether([P("Chuva forte sobre o radome: a solução é fazer o KDP e o ZDR funcionarem", ParagraphStyle("h3c", parent=h1, fontSize=10, spaceBefore=6)),
+          P("Em banda X, a chuva forte sobre o radar molha o radome e atenua o sinal em todas as direções, e cada célula "
+            "intensa apaga o que está atrás dela. A resposta técnica é a polarimetria: o ΦDP e o KDP medem fase, não "
+            "potência, e não são afetados pela atenuação, pelo radome molhado, pela calibração nem pelo bloqueio "
+            "parcial; com eles se corrige a atenuação e se estima a chuva forte diretamente. Hoje isso não é possível: "
+            "às 08:20 de 20/11, com chuva sobre o radar, o SNR mediano em chuva de 35–55 dBZ era de 8,6 dB, o ZDR "
+            "ficou em 0 dB (49% negativo, quando deveria ser +0,5 a +2 dB) e o KDP medido foi de 0,24 °/km, contra "
+            "~0,57 °/km esperados pela refletividade. O ΦDP e a refletividade não fecham entre si, e nenhum "
+            "processamento dos arquivos atuais recupera o que o radar não mediu. A correção é no equipamento: "
+            "sensibilidade, PRF de 1200/900 Hz, calibração do ZDR e revisão do processamento do ΦDP.")]),
+          figura(FIG / "polarimetria_20261120_1120.png", 14, "Volume de 20/11/2026, 11:20 UTC, 0,5°: TH, ZDR, ΦDP, "
+                 "KDP, RhoHV e SNR; embaixo, o ΦDP medido (azul) muito abaixo do esperado pela refletividade (vermelho) "
+                 "e o ZDR em torno de zero em chuva forte.")]
+
     s += [KeepTogether([P("4. Problemas e soluções", h1),
           tabela([
               ["Problema", "Solução", "Responsável", "Custo / prazo"],
@@ -167,14 +193,17 @@ def main():
             "Morro das Antenas. No setor oeste, a 30 km, o bloqueio do feixe de 1,4° cai de ~40–75% para ~0%."),
           tabela([
               ["Posição (antena acima do solo)", "Bloqueio médio a 30 km (0,5° / 1,4°)", "Setor oeste a 30 km (0,5° / 1,4°)"],
-              ["Atual, como está (~3 m)", "37–42% / 18–28%", "72–87% / 39–74%"],
+              ["Atual (−28,93455, −49,36249), como está (~3 m)", "37–42% / 18–28%", "72–87% / 39–74%"],
               ["<b>Atual, torre de 25 m</b>", "<b>14% / 0%</b>", "<b>18% / 0%</b>"],
-              ["Topo do Morro dos Conventos, 25 m", "14% / 0%", "17% / 0%"],
-              ["Morro das Antenas, 25–35 m", "6–9% / 0–1%", "14–15% / 1%"],
+              ["Proposta 1: topo do Morro dos Conventos (−28,93725, −49,36762), 25 m", "14% / 0%", "17% / 0%"],
+              ["Proposta 2: Morro das Antenas (−28,84387, −49,39876), 25–35 m", "6–9% / 0–1%", "14–15% / 1%"],
           ], [6.0 * cm, 5.5 * cm, 5.5 * cm]),
           Spacer(1, 6),
-          figura(FIG / "v3_pbb_posicoes.png", 13, "Bloqueio simulado com torre de 25 m em cada posição (MDS do SIGSC). "
-                 "Cores escuras: maior fração do feixe bloqueada.")]
+          figura(FIG / "v3_pbb_posicoes.png", 15, "Bloqueio simulado com torre de 25 m em cada posição, com latitude e "
+                 "longitude (MDS do SIGSC). Cores escuras: maior fração do feixe bloqueada."),
+          figura(FIG / "v3_mapa3d_posicoes.png", 16.5, "Relevo e superfície do SIGSC em 3D: posição atual (vermelho), "
+                 "propostas (azul) e obstáculos (roxo), com as coordenadas. Atual: −28,93455, −49,36249; proposta 1 "
+                 "(topo do Morro dos Conventos): −28,93725, −49,36762; proposta 2 (Morro das Antenas): −28,84387, −49,39876.")]
 
     s += [P("6. Recomendações, em ordem de prioridade", h1),
           ListFlowable([ListItem(P(t), leftIndent=14) for t in [
@@ -202,7 +231,7 @@ def main():
                  "lembrar que ausência de eco além de ~20 km não significa ausência de chuva."])]
 
     s += [Spacer(1, 10),
-          P("Contato técnico: Reinaldo Haas. Relatório completo, dados derivados e scripts em "
+          P("Contato técnico: Dr. Reinaldo Haas. Relatório completo, dados derivados e scripts em "
             "github.com/reinaldohaas/radar-sc.", ParagraphStyle("fim", parent=peq, fontName="DV-I"))]
     doc.build(s, onFirstPage=rodape, onLaterPages=rodape)
     print(SAIDA)

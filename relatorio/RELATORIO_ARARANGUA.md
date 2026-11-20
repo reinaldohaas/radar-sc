@@ -1,6 +1,8 @@
 # Radar meteorológico de Araranguá: diagnóstico, bloqueios do feixe e posição alternativa
 
-**Autor:** Reinaldo Haas. Análises e scripts desenvolvidos com auxílio do Claude (Anthropic).
+**Autor:** Dr. Reinaldo Haas. Análises e scripts desenvolvidos com auxílio do Claude (Anthropic).
+
+Relatório técnico no âmbito do **Termo de Cooperação Técnica nº 007/SDC/2025** entre a Secretaria de Estado da Proteção e Defesa Civil (SDC) e a Universidade Federal de Santa Catarina (UFSC). O objeto do termo é a troca, integração e acesso a dados hidrológicos e meteorológicos, incluindo os do radar meteorológico, via FTP. As atividades 1.2 e 2.1 do Plano de Ação preveem a comparação com produtos de radar e o uso de dados de radar em tempo real.
 
 Versão 3, 20/11/2026. Relevo: **MDT e MDS de 1 m do SIGSC** (MDT das folhas SH-22-X-B-IV-3, SH-22-X-A-VI-4 e SH-22-X-B-IV-1; MDS das folhas B-IV-3 e B-IV-1, levantamento de 2010–2012) e SRTM fora delas.
 Dados: volumes do FTP da Defesa Civil de SC, de 16/11 a 20/11/2026 (7 para a validação do bloqueio; 47 para a polarimetria e a sensibilidade).
@@ -414,6 +416,51 @@ O levantamento é de 2010–2012, anterior ao radar: a torre atual não aparece,
 
 **Quando volta a servir.** Com a sensibilidade corrigida e o ZDR calibrado, o mesmo script mede o bloqueio real de cada azimute a partir de um dia de chuva estratiforme espalhada. É a melhor validação das simulações deste relatório e da correção de bloqueio no produto de chuva.
 
+## 4.3 Chuva forte sobre o radome: a solução é o KDP e o ZDR, que hoje não funcionam
+
+**O problema.** Em banda X, a chuva forte é exatamente quando o radar mais falha:
+- a água no radome atenua o sinal em todas as direções;
+- cada célula intensa apaga o que está atrás dela;
+- a refletividade passa a subestimar a chuva justamente nos eventos extremos.
+
+Foi o que aconteceu na manhã de 20/11, com o CCM sobre o litoral sul: em 18 dos 47 volumes analisados chovia sobre o próprio radar.
+
+**A solução conhecida é a polarimetria.** É para isso que um radar de banda X de dupla polarização existe:
+- O **ΦDP**, e o **KDP**, que é a sua derivada, medem fase e não potência. Não são afetados pela atenuação no caminho, pelo radome molhado, pela calibração de Z nem pelo bloqueio parcial do feixe.
+- Com o ΦDP, corrige-se a atenuação de Z e de ZDR ao longo do raio (ΔZ ≈ 0,28·ΔΦDP em banda X).
+- Com o KDP, estima-se a chuva forte diretamente (R ≈ 19,6·KDP^0,82 mm/h).
+- O **ZDR** calibrado completa a estimativa e separa chuva de granizo.
+
+Ou seja, a resposta à chuva forte sobre o radome é **fazer o KDP e o ZDR funcionarem**.
+
+**Por que hoje não dá: o volume de 20/11, 11:20 UTC (08:20 local), com chuva sobre o radar** (`figura_polarimetria_volume.py`, `polarimetria_20261120_1120.csv`):
+
+![Variáveis polarimétricas com chuva sobre o radar](figuras/polarimetria_20261120_1120.png)
+
+| Indicador, em 203 mil gates de chuva de 35–55 dBZ a 0,5° | Medido | Esperado num radar em ordem |
+|---|---|---|
+| SNR mediano | 8,6 dB | > 20–30 dB |
+| RhoHV mediano | 0,94 | ≥ 0,97–0,99 |
+| ZDR mediano | 0,0 dB (49% dos gates negativos) | +0,5 a +2 dB, quase nunca negativo |
+| KDP mediano medido | 0,24 °/km (19% negativo) | ~0,57 °/km para essa refletividade |
+| Ruído do ΦDP (mediana do desvio) | 2,8° | < 1–2° |
+
+No perfil do raio de 82°, com 40–50 dBZ por 50 km, a refletividade pede um ΦDP subindo ~105°. O ΦDP medido sobe só ~20°, e o ZDR fica em torno de zero o caminho inteiro.
+
+**O que não tem conserto em processamento:**
+- **O ΦDP e o Z não fecham entre si.** Ou o Z está calibrado alto, ~5 dB pela diferença de KDP, ou o ΦDP é subestimado ou mal processado. Sem saber qual dos dois está errado, nenhuma correção de atenuação é confiável.
+- **O ZDR tem desvio desconhecido**, e o viés do SNR baixo varia de gate para gate. Não existe uma constante que o corrija.
+- **Com SNR de ~8 dB**, o ruído das estimativas é grande demais para a derivada do ΦDP. O KDP sai negativo em quase um quinto da chuva.
+- **A PRF baixa dá poucos pulsos por raio,** o que aumenta o ruído de todas as estimativas.
+
+Nenhum algoritmo aplicado aos arquivos atuais recupera o que o radar não mediu. Isso inclui suavizar mais, mascarar ou trocar os coeficientes. **A correção precisa ser feita no equipamento:**
+1. Recuperar a sensibilidade (seção 2.2), para levar o SNR em chuva a 20–30 dB.
+2. PRF de 1200/900 Hz (seção 2.1), com o triplo de pulsos por raio.
+3. Calibração do ZDR por varredura vertical e conferência da constante de Z.
+4. Revisão do processamento do ΦDP no EDGE: fase do sistema, filtragem e cálculo do KDP.
+
+Feito isso, o KDP passa a ser a melhor estimativa de chuva forte desse radar, imune ao radome molhado e ao bloqueio parcial. O script `analise_polarimetrica.py` já está pronto para medir o bloqueio e a calibração assim que os dados permitirem.
+
 ## 5. Posições alternativas
 
 Posições estudadas (WGS84; chão pelo MDT do SIGSC; distância e azimute a partir do radar atual):
@@ -542,6 +589,7 @@ Scripts em `radar-sc/`:
 | `chuva_ponto.py --lat --lon --nome --data --das --ate` | taxa de chuva num ponto pelo radar (R(Z) e R(KDP)), série e mapa em `chuva/` |
 | `analise_polarimetrica.py` | bloqueio pela autoconsistência Z–ΦDP, ZDR por azimute e sensibilidade por distância (`polarimetria_azimute.csv`, `sensibilidade_alcance.csv`, `v3_polarimetria.png`) |
 | `mapa_altura_superficie.py` | altura da mata e das construções (MDS − MDT) com correção das falésias (`v3_altura_superficie.png`, `mds_altura_pontos.csv`) |
+| `figura_polarimetria_volume.py ARQUIVO.hdf` | TH, ZDR, ΦDP, KDP, RhoHV e SNR de um volume; ΦDP medido x esperado; diagnósticos |
 | `posicoes_obstaculos.py` | coordenadas do radar, das propostas e dos obstáculos; bloqueio por azimute nas três posições; planta e vista 3D |
 | `raios_bloqueados.py ARQUIVO.hdf --elev 0.5` | classifica os raios de um volume (filtro, bloqueio, atenuação); figura, CSV e KML |
 | `setores_por_volume.py` | raios apagados pelo filtro, sombras de atenuação e chuva sobre o radar, volume a volume (`setores_por_volume.csv`, `v3_setores_por_volume.png`) |

@@ -4,7 +4,7 @@
 Gera:
   relatorio/posicoes_obstaculos.csv           lat/lon, altitude (MDT e MDS do SIGSC), distância e azimute a partir da antena
   dem/pbb_posicoes_mds.npz                    bloqueio por azimute (0,5° e 1,4°, a 10, 30 e 60 km) nas três posições
-  relatorio/figuras/v3_mapa3d_posicoes.png    relevo 3D com posições, obstáculos e raios coloridos pelo bloqueio
+  relatorio/figuras/v3_mapa3d_posicoes_simples.png  vista 3D simples (a principal é de figuras_posicoes_latlon.py)
 Bloqueio: MDS de 1 m do SIGSC + 6 m de mata desde 2012 (melhor ajuste da seção 4.1), Terra 4/3, feixe de 2,2°.
 """
 import csv
@@ -161,14 +161,14 @@ def figuras(pbb, t):
             ax.plot(ox, oy, "^", ms=6, mfc="purple", mec="k", zorder=5)
             ax.text(ox - 0.9, oy - 0.9, str(n_), fontsize=8, color="purple", weight="bold", zorder=6)
         oeste = (pbb["az"] >= 240) & (pbb["az"] <= 340)
-        ax.set_title(f"{nome}\n0,5° a 30 km: médio {f.mean():.0%}, oeste {f[oeste].mean():.0%}  |  "
+        ax.set_title(f"{nome}\nlat {la:.5f}, lon {lo:.5f}\n0,5° a 30 km: médio {f.mean():.0%}, oeste {f[oeste].mean():.0%}  |  "
                      f"1,4°: médio {pbb[f'p{k}_14_30'].mean():.0%}, oeste {pbb[f'p{k}_14_30'][oeste].mean():.0%}", fontsize=10)
         ax.set_xlim(ext[0], ext[1]); ax.set_ylim(ext[2], ext[3])
         ax.set_xlabel("km (leste)")
     eixos[0].set_ylabel("km (norte)")
     sm = cm.ScalarMappable(cmap="RdYlGn_r", norm=colors.Normalize(0, 100))
     fig.colorbar(sm, ax=eixos, shrink=0.75, pad=0.01, label="Feixe de 0,5° bloqueado a 30 km (%)")
-    leg = "  ".join(f"{n_} {nm}" for n_, nm, _, _ in obs)
+    leg = "  ".join(f"{n_} {nm} ({ola:.5f}, {olo:.5f})" for n_, nm, ola, olo in obs)
     fig.text(0.5, 0.005, "Obstáculos (▲): " + leg, ha="center", fontsize=8, wrap=True)
     fig.suptitle("Posições do radar e obstáculos sobre a superfície do SIGSC (MDS 1 m): raios de 7 km coloridos pelo "
                  "bloqueio simulado a 30 km", fontsize=12)
@@ -199,7 +199,7 @@ def figuras(pbb, t):
     ax.view_init(35, -110)
     ax.set_xlabel("km (leste)"); ax.set_ylabel("km (norte)"); ax.set_zticks([])
     ax.set_title("Vista 3D (exagero vertical 5×): posições do radar (vermelho) e obstáculos (roxo)\n" + leg, fontsize=9)
-    fig.savefig(AQUI / "relatorio" / "figuras" / "v3_mapa3d_posicoes.png", bbox_inches="tight"); plt.close(fig)
+    fig.savefig(AQUI / "relatorio" / "figuras" / "v3_mapa3d_posicoes_simples.png", bbox_inches="tight"); plt.close(fig)
 
 
 if __name__ == "__main__":
