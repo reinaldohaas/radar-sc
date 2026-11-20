@@ -18,16 +18,19 @@ import numpy as np
 
 ACERVO = Path(r"C:\Users\haas\github\SIGSC\raster\mdt_sigsc")
 PADRAO = "MDT_SH-22-X-*.tif"
+ACERVO_MDS = Path(r"C:\Users\haas\github\SIGSC\raster\mds_sigsc")   # superfície: terreno + mata + prédios
+PADRAO_MDS = "MDS_SH-22-X-*.tif"
 
 
-def folhas(padrao=PADRAO):
-    return sorted(ACERVO.glob(padrao))
+def folhas(padrao=PADRAO, acervo=None):
+    return sorted((acervo or ACERVO).glob(padrao))
 
 
 class Mosaico:
     """Mosaico regular em UTM, amostrado por lat/lon (bilinear)."""
 
-    def __init__(self, arquivos, res, limites=None):
+    def __init__(self, arquivos, res, limites=None, mediana=False):
+        """mediana: filtro mediano 3x3 (1 m) antes de tudo, para tirar picos isolados do MDS (fios, aves, ruído)."""
         import rasterio
         from rasterio.enums import Resampling
         from rasterio.merge import merge
@@ -46,6 +49,9 @@ class Mosaico:
             arr, self.transform = merge(ds, bounds=limites, res=res, nodata=-9999.0 if nod is None else nod,
                                         resampling=Resampling.nearest, dtype="float32", method="max")
             a = arr[0].astype("float32")
+            if mediana:
+                from scipy.ndimage import median_filter
+                a = median_filter(a, size=3)
         else:
             # Máximo em blocos res x res, folha por folha (o rasterio não lê com Resampling.max)
             from rasterio.transform import from_origin
@@ -56,6 +62,9 @@ class Mosaico:
             a = np.full((int(np.ceil((y1 - y0) / res)) + 1, int(np.ceil((x1 - x0) / res)) + 1), np.nan, dtype="float32")
             for d in ds:
                 b = d.read(1).astype("float32")
+                if mediana:
+                    from scipy.ndimage import median_filter
+                    b = median_filter(b, size=3)
                 if nod is not None:
                     b[b == nod] = np.nan
                 h, w = (b.shape[0] // k) * k, (b.shape[1] // k) * k
@@ -91,20 +100,20 @@ class Mosaico:
 class RelevoSIGSC:
     """1 m perto das posições, 5 m no resto das folhas, base (SRTM) fora delas."""
 
-    def __init__(self, base, posicoes=(), raio_fino_km=2.0, res_largo=5.0, padrao=PADRAO):
+    def __init__(self, base, posicoes=(), raio_fino_km=2.0, res_largo=5.0, padrao=PADRAO, acervo=None, mediana=False):
         from pyproj import Transformer
-        arqs = folhas(padrao)
+        arqs = folhas(padrao, acervo)
         if not arqs:
-            raise SystemExit(f"Nenhuma folha {padrao} em {ACERVO}")
+            raise SystemExit(f"Nenhuma folha {padrao} em {acervo or ACERVO}")
         self.base = base
-        self.largo = Mosaico(arqs, res_largo)
+        self.largo = Mosaico(arqs, res_largo, mediana=mediana)
         t = Transformer.from_crs("EPSG:4326", self.largo.crs, always_xy=True)
         self.finos = []
         for la, lo in posicoes:
             x, y = t.transform(lo, la)
             r = raio_fino_km * 1000
             try:
-                self.finos.append(Mosaico(arqs, 1.0, limites=(x - r, y - r, x + r, y + r)))
+                self.finos.append(Mosaico(arqs, 1.0, limites=(x - r, y - r, x + r, y + r), mediana=mediana))
             except ValueError:
                 pass
 
