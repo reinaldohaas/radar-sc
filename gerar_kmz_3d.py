@@ -194,7 +194,7 @@ def feixe_kml(nome, h_antena, elev, pbb, az, visivel, borda=None, ident="", orig
             f"<open>0</open>{''.join(marcas)}</Folder>")
 
 
-def elementos_radar(pbb, offset=0.0):
+def elementos_radar(pbb, offset=0.0, propostas_visiveis=False):
     """offset: o mesmo deslocamento vertical dos modelos, para radar e feixes ficarem no lugar certo sobre eles."""
     az = pbb["az"]
     lat, lon = ATUAL
@@ -214,10 +214,10 @@ def elementos_radar(pbb, offset=0.0):
         feixe_kml("Torre 25 m: feixe 0,5° — centro", CHAO + H_TORRE, 0.5, pbb["torre_05"], az, False, ident="t05c"),
         feixe_kml("Torre 25 m: feixe 0,5° — borda inferior", CHAO + H_TORRE, 0.5, pbb["torre_05"], az, False, borda=-1, ident="t05b"),
     ]
-    return "".join(pts) + torre + "".join(pastas) + propostas_e_obstaculos(offset)
+    return "".join(pts) + torre + "".join(pastas) + propostas_e_obstaculos(offset, propostas_visiveis)
 
 
-def propostas_e_obstaculos(offset):
+def propostas_e_obstaculos(offset, visiveis=False):
     """Posições propostas (com os feixes de 0,5° e 1,4° coloridos pelo bloqueio a 30 km) e obstáculos medidos."""
     cache = AQUI / "dem" / "pbb_posicoes_mds.npz"
     if not cache.exists():
@@ -238,7 +238,7 @@ def propostas_e_obstaculos(offset):
                              ident=f"p{k}05b", origem=(la, lo), alcance=5000)
                  + feixe_kml("Feixe 1,4° — centro", chao + h, 1.4, d[f"p{k}_14_30"], az, False,
                              ident=f"p{k}14c", origem=(la, lo), alcance=5000))
-        pastas.append(f"<Folder><name>{nomes[k]}</name><visibility>0</visibility>{corpo}</Folder>")
+        pastas.append(f"<Folder><name>{nomes[k]}</name><visibility>{int(visiveis)}</visibility>{corpo}</Folder>")
     obs = []
     for n, la, lo, h, txt in OBSTACULOS:
         if la is None:
@@ -318,7 +318,7 @@ def main():
         z.writestr("doc.kml", kml(corpo, "Radar de Araranguá — Morro dos Conventos 3D"))
         for k, v in arquivos.items():
             z.writestr(k, v)
-    (SAIDA / "feixes_radar_ararangua.kml").write_text(kml(elementos_radar(pbb, a.offset), "Radar de Araranguá — feixes"), encoding="utf-8")
+    (SAIDA / "feixes_radar_ararangua.kml").write_text(kml(elementos_radar(pbb, a.offset, propostas_visiveis=True), "Radar de Araranguá — feixes"), encoding="utf-8")
     print(destino_kmz, f"{os.path.getsize(destino_kmz) / 1e6:.1f} MB")
 
 
