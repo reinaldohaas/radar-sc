@@ -171,7 +171,7 @@ def cor_kml(f, alfa):
     return f"{int(alfa):02x}{int(b * 255):02x}{int(g * 255):02x}{int(r * 255):02x}"
 
 
-def feixe_kml(nome, h_antena, elev, pbb, az, visivel, borda=None):
+def feixe_kml(nome, h_antena, elev, pbb, az, visivel, borda=None, ident=""):
     """Superfície do feixe (centro, ou borda inferior com borda=-1) até R_FEIXE, um quadrilátero por grau."""
     ang = elev + (borda or 0) * FEIXE_GRAUS / 2
     rs = np.array([100.0, 500.0, 1000.0, 1500.0, 2000.0, 2500.0, R_FEIXE])
@@ -189,33 +189,64 @@ def feixe_kml(nome, h_antena, elev, pbb, az, visivel, borda=None):
         marcas.append(f"<Placemark><name>{a:.0f}° ({pbb[i] * 100:.0f}% bloqueado)</name><Style><PolyStyle><color>{cor}</color>"
                       f"<outline>0</outline></PolyStyle></Style><Polygon><altitudeMode>absolute</altitudeMode>"
                       f"<outerBoundaryIs><LinearRing><coordinates>{txt}</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>")
-    return (f"<Folder><name>{nome}</name><visibility>{int(visivel)}</visibility>"
+    return (f"<Folder{f' id=\"{ident}\"' if ident else ''}><name>{nome}</name><visibility>{int(visivel)}</visibility>"
             f"<open>0</open>{''.join(marcas)}</Folder>")
 
 
-def elementos_radar(pbb):
+def elementos_radar(pbb, offset=0.0):
+    """offset: o mesmo deslocamento vertical dos modelos, para radar e feixes ficarem no lugar certo sobre eles."""
     az = pbb["az"]
     lat, lon = ATUAL
+    CHAO = CHAO_RADAR + offset
     pts = []
     for (rot, h) in (("Antena atual (~3 m acima do chão)", H_ANTENA), ("Antena na torre de 25 m", H_TORRE)):
         pts.append(f"<Placemark><name>{rot}</name><Point><altitudeMode>absolute</altitudeMode><extrude>1</extrude>"
-                   f"<coordinates>{lon},{lat},{CHAO_RADAR + h}</coordinates></Point></Placemark>")
+                   f"<coordinates>{lon},{lat},{CHAO + h}</coordinates></Point></Placemark>")
     torre = (f"<Placemark><name>Torre de 25 m</name><Style><LineStyle><color>ff0000ff</color><width>4</width></LineStyle></Style>"
-             f"<LineString><altitudeMode>absolute</altitudeMode><coordinates>{lon},{lat},{CHAO_RADAR} {lon},{lat},{CHAO_RADAR + H_TORRE}"
+             f"<LineString><altitudeMode>absolute</altitudeMode><coordinates>{lon},{lat},{CHAO} {lon},{lat},{CHAO + H_TORRE}"
              f"</coordinates></LineString></Placemark>")
     pastas = [
-        feixe_kml("Feixe 0,5° — centro (antena atual; cor = bloqueio a 40 km)", CHAO_RADAR + H_ANTENA, 0.5, pbb["atual_05"], az, True),
-        feixe_kml("Feixe 0,5° — borda inferior (−0,6°)", CHAO_RADAR + H_ANTENA, 0.5, pbb["atual_05"], az, True, borda=-1),
-        feixe_kml("Feixe 1,4° — centro (antena atual)", CHAO_RADAR + H_ANTENA, 1.4, pbb["atual_14"], az, False),
-        feixe_kml("Feixe 1,4° — borda inferior (+0,3°)", CHAO_RADAR + H_ANTENA, 1.4, pbb["atual_14"], az, False, borda=-1),
-        feixe_kml("Torre 25 m: feixe 0,5° — centro", CHAO_RADAR + H_TORRE, 0.5, pbb["torre_05"], az, False),
-        feixe_kml("Torre 25 m: feixe 0,5° — borda inferior", CHAO_RADAR + H_TORRE, 0.5, pbb["torre_05"], az, False, borda=-1),
+        feixe_kml("Feixe 0,5° — centro (antena atual; cor = bloqueio a 40 km)", CHAO + H_ANTENA, 0.5, pbb["atual_05"], az, True, ident="f05c"),
+        feixe_kml("Feixe 0,5° — borda inferior (−0,6°)", CHAO + H_ANTENA, 0.5, pbb["atual_05"], az, True, borda=-1, ident="f05b"),
+        feixe_kml("Feixe 1,4° — centro (antena atual)", CHAO + H_ANTENA, 1.4, pbb["atual_14"], az, False, ident="f14c"),
+        feixe_kml("Feixe 1,4° — borda inferior (+0,3°)", CHAO + H_ANTENA, 1.4, pbb["atual_14"], az, False, borda=-1, ident="f14b"),
+        feixe_kml("Torre 25 m: feixe 0,5° — centro", CHAO + H_TORRE, 0.5, pbb["torre_05"], az, False, ident="t05c"),
+        feixe_kml("Torre 25 m: feixe 0,5° — borda inferior", CHAO + H_TORRE, 0.5, pbb["torre_05"], az, False, borda=-1, ident="t05b"),
     ]
     return "".join(pts) + torre + "".join(pastas)
 
 
+def tour(offset):
+    """gx:Tour para o Google Earth Pro: visão geral, aproximação do radar, órbita, feixe de 1,4°, torre de 25 m."""
+    lat, lon = ATUAL
+    alt = CHAO_RADAR + offset
+
+    def voo(dur, h, tilt, rng, la=lat, lo=lon, a=None, modo="smooth"):
+        return (f"<gx:FlyTo><gx:duration>{dur}</gx:duration><gx:flyToMode>{modo}</gx:flyToMode><LookAt>"
+                f"<longitude>{lo}</longitude><latitude>{la}</latitude><altitude>{a if a is not None else alt}</altitude>"
+                f"<heading>{h}</heading><tilt>{tilt}</tilt><range>{rng}</range><altitudeMode>absolute</altitudeMode></LookAt></gx:FlyTo>")
+
+    def vis(pares, dur=1.5):
+        ups = "".join(f'<Change><Folder targetId="{i}"><visibility>{v}</visibility></Folder></Change>' for i, v in pares)
+        return (f"<gx:AnimatedUpdate><gx:duration>{dur}</gx:duration><Update><targetHref/>{ups}</Update></gx:AnimatedUpdate>"
+                f"<gx:Wait><gx:duration>{dur}</gx:duration></gx:Wait>")
+
+    pausa = lambda d: f"<gx:Wait><gx:duration>{d}</gx:duration></gx:Wait>"
+    passos = [vis([("f05c", 1), ("f05b", 1), ("f14c", 0), ("f14b", 0), ("t05c", 0), ("t05b", 0)], 0.1),
+              voo(1, 320, 60, 6000, lat - 0.02, lon + 0.02, 0, "bounce"), pausa(2),
+              voo(6, 300, 72, 1800), pausa(2),
+              voo(5, 250, 80, 700), pausa(2)]
+    for h in range(250, 250 + 361, 30):           # órbita em volta da antena
+        passos.append(voo(2.5, h % 360, 78, 900))
+    passos += [pausa(1), vis([("f05c", 0), ("f05b", 0), ("f14c", 1), ("f14b", 1)]), voo(5, 290, 75, 1200), pausa(3),
+               vis([("f14c", 0), ("f14b", 0), ("t05c", 1), ("t05b", 1)]), voo(5, 300, 78, 900), pausa(3),
+               voo(8, 320, 65, 5000, lat - 0.015, lon + 0.015, 0), pausa(2)]
+    return (f"<gx:Tour><name>Tour: o feixe do radar e a mata do Morro dos Conventos</name><gx:Playlist>{''.join(passos)}"
+            f"</gx:Playlist></gx:Tour>")
+
+
 def kml(corpo, nome):
-    return (f'<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>{nome}</name>'
+    return (f'<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2"><Document><name>{nome}</name>'
             f"<LookAt><longitude>{ATUAL[1] - 0.004}</longitude><latitude>{ATUAL[0] - 0.012}</latitude><altitude>0</altitude>"
             f"<heading>330</heading><tilt>70</tilt><range>3500</range></LookAt>{corpo}</Document></kml>")
 
@@ -248,13 +279,13 @@ def main():
             f"{a.passo} m), em altitude absoluta. O terreno do Google Earth aqui fica ~10–20 m abaixo do SIGSC: para ver só o "
             "modelo, desligue a camada Terreno (Google Earth Pro: painel Camadas). Feixes: cor = fração bloqueada a 40 km "
             "(verde 0%, vermelho 100%), simulada com o MDS + 6 m de mata.]]></description>")
-    corpo = leia + f"<Folder><name>Modelos 3D (SIGSC)</name><open>1</open>{''.join(modelos)}</Folder>" + elementos_radar(pbb)
+    corpo = leia + f"<Folder><name>Modelos 3D (SIGSC)</name><open>1</open>{''.join(modelos)}</Folder>" + elementos_radar(pbb, a.offset) + tour(a.offset)
     destino_kmz = SAIDA / "morro_conventos_3d.kmz"
     with zipfile.ZipFile(destino_kmz, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("doc.kml", kml(corpo, "Radar de Araranguá — Morro dos Conventos 3D"))
         for k, v in arquivos.items():
             z.writestr(k, v)
-    (SAIDA / "feixes_radar_ararangua.kml").write_text(kml(elementos_radar(pbb), "Radar de Araranguá — feixes"), encoding="utf-8")
+    (SAIDA / "feixes_radar_ararangua.kml").write_text(kml(elementos_radar(pbb, a.offset), "Radar de Araranguá — feixes"), encoding="utf-8")
     print(destino_kmz, f"{os.path.getsize(destino_kmz) / 1e6:.1f} MB")
 
 
