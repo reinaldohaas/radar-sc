@@ -1,0 +1,37 @@
+posicao,k,elev,altura_feixe_50km_acima_antena_m,pbb_30km,pbb_60km,oeste_pbb_30km,pbb_janela_268_271_a_58km,corr_observado_40km
+Atual,1 (sem refração),0.5,632,0.41,0.46,0.87,1.00,0.34
+Atual,1 (sem refração),1.4,1418,0.28,0.30,0.74,1.00,0.28
+Atual,1 (sem refração),2.4,2290,0.24,0.24,0.63,1.00,0.35
+Atual,4/3 (padrão),0.5,583,0.42,0.47,0.87,1.00,0.33
+Atual,4/3 (padrão),1.4,1369,0.28,0.31,0.74,1.00,0.28
+Atual,4/3 (padrão),2.4,2241,0.24,0.24,0.63,1.00,0.35
+Atual,2 (super-refração),0.5,534,0.43,0.49,0.87,1.00,0.33
+Atual,2 (super-refração),1.4,1320,0.28,0.31,0.74,1.00,0.28
+Atual,2 (super-refração),2.4,2192,0.24,0.24,0.63,1.00,0.35
+Atual,4 (super-refração forte),0.5,485,0.44,0.50,0.87,1.00,0.33
+Atual,4 (super-refração forte),1.4,1271,0.28,0.31,0.74,1.00,0.28
+Atual,4 (super-refração forte),2.4,2143,0.24,0.24,0.63,1.00,0.35
+Topo do Morro dos Conventos,1 (sem refração),0.5,632,0.13,0.30,0.16,0.67,
+Topo do Morro dos Conventos,1 (sem refração),1.4,1418,0.00,0.07,0.00,0.17,
+Topo do Morro dos Conventos,1 (sem refração),2.4,2290,0.00,0.00,0.00,0.00,
+Topo do Morro dos Conventos,4/3 (padrão),0.5,583,0.14,0.32,0.17,0.70,
+Topo do Morro dos Conventos,4/3 (padrão),1.4,1369,0.00,0.08,0.00,0.20,
+Topo do Morro dos Conventos,4/3 (padrão),2.4,2241,0.00,0.00,0.00,0.00,
+Topo do Morro dos Conventos,2 (super-refração),0.5,534,0.15,0.35,0.18,0.74,
+Topo do Morro dos Conventos,2 (super-refração),1.4,1320,0.00,0.09,0.00,0.23,
+Topo do Morro dos Conventos,2 (super-refração),2.4,2192,0.00,0.00,0.00,0.00,
+Topo do Morro dos Conventos,4 (super-refração forte),0.5,485,0.17,0.37,0.20,0.77,
+Topo do Morro dos Conventos,4 (super-refração forte),1.4,1271,0.00,0.10,0.00,0.27,
+Topo do Morro dos Conventos,4 (super-refração forte),2.4,2143,0.00,0.00,0.00,0.00,
+Morro das Antenas,1 (sem refração),0.5,632,0.06,0.28,0.14,0.62,
+Morro das Antenas,1 (sem refração),1.4,1418,0.00,0.08,0.01,0.13,
+Morro das Antenas,1 (sem refração),2.4,2290,0.00,0.00,0.00,0.00,
+Morro das Antenas,4/3 (padrão),0.5,583,0.06,0.30,0.15,0.65,
+Morro das Antenas,4/3 (padrão),1.4,1369,0.00,0.09,0.01,0.15,
+Morro das Antenas,4/3 (padrão),2.4,2241,0.00,0.00,0.00,0.00,
+Morro das Antenas,2 (super-refração),0.5,534,0.07,0.32,0.16,0.69,
+Morro das Antenas,2 (super-refração),1.4,1320,0.00,0.10,0.01,0.18,
+Morro das Antenas,2 (super-refração),2.4,2192,0.00,0.00,0.00,0.00,
+Morro das Antenas,4 (super-refração forte),0.5,485,0.08,0.34,0.18,0.72,
+Morro das Antenas,4 (super-refração forte),1.4,1271,0.00,0.11,0.01,0.22,
+Morro das Antenas,4 (super-refração forte),2.4,2143,0.00,0.00,0.00,0.00,

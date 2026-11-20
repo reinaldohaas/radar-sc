@@ -54,14 +54,18 @@ def perfis(lat, lon, relevo, az=np.arange(0, 360, 0.5), max_km=80.0, obst_m=0.0,
 
 
 def simular(lat, lon, h_antena, relevo, elevacoes=(0.5, 1.4, 2.4), az=np.arange(0, 360, 0.5), max_km=80.0,
-            obst_m=0.0, perfis_prontos=None):
-    """Devolve (az, d, {elev: PBB[az, d]}) com PBB acumulado ao longo do raio, entre 0 e 1."""
+            obst_m=0.0, perfis_prontos=None, k=None):
+    """Devolve (az, d, {elev: PBB[az, d]}) com PBB acumulado ao longo do raio, entre 0 e 1.
+
+    k: fator do raio efetivo da Terra (None = 4/3, refração padrão; 1 = sem refração; >4/3 = super-refração).
+    """
     az, d, z = perfis_prontos or perfis(lat, lon, relevo, az, max_km, obst_m)
+    r_ef = R_EF if k is None else k * 6371e3
     out = {}
     for e in elevacoes:
         er = math.radians(e)
-        # altura do centro do feixe acima do mar (Terra 4/3)
-        hc = np.sqrt(d ** 2 + R_EF ** 2 + 2 * d * R_EF * math.sin(er)) - R_EF + h_antena
+        # altura do centro do feixe acima do mar (Terra de raio efetivo k·R)
+        hc = np.sqrt(d ** 2 + r_ef ** 2 + 2 * d * r_ef * math.sin(er)) - r_ef + h_antena
         raio = d * math.tan(math.radians(FEIXE_GRAUS / 2))
         y = (z - hc[None, :]) / raio[None, :]
         out[e] = np.maximum.accumulate(fracao_bloqueada(y), axis=1)
