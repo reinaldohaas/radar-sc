@@ -17,6 +17,9 @@ def _txt(v):
 
 RHOHV_MIN = 0.8
 JANELA_RAIOS, JANELA_KM = 3, 1.0  # suavização do RhoHV antes do limiar
+# Zona cega: em Araranguá (EEC Ranger), até 2,17 km todos os raios saem saturados em ~74 dBZ, porque o receptor
+# ainda capta o pulso transmitido (14,3 µs de ida e volta). Não é eco real: é escondida.
+ZONA_CEGA_KM = 2.2
 
 
 def _suavizar(rho, rscale_km):
@@ -83,6 +86,8 @@ def ler_volume_odim(caminho, quantidades=PREFERIDAS, th_rhohv=True, mascara="sua
                 fis[~(rho >= RHOHV_MIN)] = np.nan
                 ordem = np.arange(len(ordem))  # já ordenado
             ranges = float(w.get("rstart", 0.0)) + (np.arange(int(w["nbins"]), dtype=np.float32) + 0.5) * rscale_km
+            fis = fis[ordem]
+            fis[:, ranges < ZONA_CEGA_KM] = np.nan
             fatias.append({"ele_deg": float(w["elangle"]), "azimuths": az[ordem], "ranges_km": ranges,
-                           "data": fis[ordem], "quantity": q})
+                           "data": fis, "quantity": q})
     return {"lat0": lat0, "lon0": lon0, "alt0": alt0, "slices": fatias}
