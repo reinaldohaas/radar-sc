@@ -1,7 +1,49 @@
 # Radar meteorológico de Araranguá: diagnóstico, bloqueios do feixe e posição alternativa
 
 Versão 3, 20/11/2026. Relevo: **MDT e MDS de 1 m do SIGSC** (MDT das folhas SH-22-X-B-IV-3, SH-22-X-A-VI-4 e SH-22-X-B-IV-1; MDS das folhas B-IV-3 e B-IV-1, levantamento de 2010–2012) e SRTM fora delas.
-Dados: 7 volumes do FTP da Defesa Civil de SC, de 16/11 23:58 a 19/11 23:36 UTC.
+Dados: volumes do FTP da Defesa Civil de SC, de 16/11 a 20/11/2026 (7 para a validação do bloqueio; 47 para a polarimetria e a sensibilidade).
+
+## Os dados são inconsistentes? Tem solução?
+
+Um pesquisador do INPE relatou que tentou usar os dados deste radar e os achou totalmente inconsistentes. O diagnóstico deste relatório confirma a impressão e explica de onde ela vem. **Os dados não são inconsistentes ao acaso:** há causas identificadas, e cada uma tem solução conhecida. Elas se somam, e quem usa o arquivo sem conhecê-las vê um radar que "não bate" com nada.
+
+| O que o usuário vê | Causa | Solução | Quem resolve | Dificuldade |
+|---|---|---|---|---|
+| Velocidade radial sem sentido; ventos dobrados | PRF de 400/267 Hz em banda X: Nyquist de 3,2 m/s por PRF (seção 2.1) | PRF de 1200/900 Hz | fabricante / operador, por configuração | baixa |
+| Raios inteiros de chuva apagados no DBZH | filtro de clutter Doppler trabalhando com velocidade aleatória (seção 2) | mudar a PRF; até lá, usar TH com máscara de RhoHV | operador / usuário | baixa |
+| Chuva fraca ausente; só aparecem núcleos de 30–50 dBZ | sensibilidade ~25–35 dB abaixo do esperado (seção 2.2) | diagnóstico do transmissor, da compressão de pulso, das perdas e do receptor; recalibração | fabricante | **média a alta, depende da causa** |
+| RhoHV baixo em chuva; ZDR negativo; ΦDP ruidoso | SNR de 5–8 dB mesmo em chuva moderada; ZDR sem calibração (seções 2.2 e 4.2) | corrigir a sensibilidade; varredura vertical (birdbath) para o ZDR | fabricante / operador | média |
+| Disco de ~74 dBZ em volta do radar | zona cega de 2,2 km: o receptor capta o próprio pulso (seção 2) | pulso curto de preenchimento, se o equipamento tiver; senão, descartar os 2,2 km | fabricante / usuário | baixa |
+| Setor oeste (interior, Serra Geral) quase sem eco a 0,5° e 1,4° | mata do Morro dos Conventos e do entorno da antena (seções 4 e 4.1) | poda perto da antena (paliativo); torre de 25 m (definitivo) | Defesa Civil | média (obra e licença ambiental) |
+| Eco fixo forte a 268–271° (Araranguá, Serra Geral) | clutter visto por uma abertura na mata (seção 3) | filtro de clutter funcionando (depende da PRF) ou mapa de clutter fixo | operador | baixa |
+| Séries com buracos | no FTP faltam volumes: em 8 h de 20/11, 7 lacunas de mais de 15 min somam 3 h (37% do tempo) | rever a transmissão e o envio ao FTP | Defesa Civil / TI | baixa |
+| Posição e altitude erradas nos arquivos | metadado com a posição 21 m deslocada e altitude de 46 m; a antena fica a ~71 m (seção 1) | corrigir a configuração do site | operador | baixa |
+| Azimutes possivelmente deslocados | a janela simulada fica 2–4° antes da observada (seção 4.1) | varredura do Sol | operador | baixa |
+
+**Exemplo (Laguna, 20/11, 8–9 h).** Laguna fica a 76 km do radar.
+- A essa distância, o radar só detecta ecos acima de ~45 dBZ, o equivalente a ~25 mm/h.
+- O FTP não tem volumes entre 08:21 e 08:57, justamente quando uma célula de 48–53 dBZ chegava à cidade.
+- Os 5 pluviômetros do Cemaden em Laguna estavam sem dados naquele dia.
+
+Resultado: não houve como saber quanto choveu (`chuva_ponto.py`, `chuva/Laguna_2026-11-20.*`).
+
+**Então, tem solução?** Sim, e quase tudo sai barato:
+- **Configuração (sem obra):** PRF, envio ao FTP, metadados, calibração do ZDR e varredura do Sol resolvem a maior parte das inconsistências que um usuário percebe.
+- **Bloqueio a oeste:** tem solução definitiva com a torre de 25 m no lugar atual.
+
+O ponto em aberto é a **sensibilidade**:
+- **Se for defeito** (compressão de pulso desligada, transmissor com pouca potência, perda na junta rotativa ou no guia de onda), conserta-se, e o radar passa a ver a chuva fraca até ~60–80 km.
+- **Se for o limite do próprio equipamento**, o radar continua útil para chuva moderada a forte até ~40–50 km, como complemento local dos radares de banda S (Morro da Igreja), mas não como radar de cobertura regional.
+
+Por isso o primeiro passo é pedir ao fabricante a especificação de sensibilidade (Zmin a 1 km ou a 50 km) e um teste de potência e de ruído. Só depois disso dá para dizer se vale a obra da torre.
+
+**Enquanto isso, para quem usa os dados:**
+- usar TH, não DBZH, com máscara de RhoHV ≥ 0,8 suavizado;
+- descartar os 2,2 km iniciais;
+- não usar a velocidade;
+- não usar o ZDR sem corrigir o deslocamento;
+- tratar o setor de 240–340° a 0,5° e 1,4° como bloqueado;
+- lembrar que "sem eco" além de ~20 km não quer dizer "sem chuva".
 
 ## Resumo
 
@@ -305,6 +347,7 @@ Scripts em `radar-sc/`:
 | `comparar_azimutes.py` | falhas fixas x falhas que mudam entre horários |
 | `relevo.py`, `relevo_sigsc.py`, `simular_bloqueio.py` | relevo (SRTM e MDT do SIGSC) e simulação do bloqueio |
 | `buscar_posicao.py` | busca de posições (versão 1, SRTM) |
+| `chuva_ponto.py --lat --lon --nome --data --das --ate` | taxa de chuva num ponto pelo radar (R(Z) e R(KDP)), série e mapa em `chuva/` |
 | `analise_polarimetrica.py` | bloqueio pela autoconsistência Z–ΦDP, ZDR por azimute e sensibilidade por distância (`polarimetria_azimute.csv`, `sensibilidade_alcance.csv`, `v3_polarimetria.png`) |
 | `analise_mds.py` | versão 3: MDS do SIGSC, calibração, setores, prédios e torres (`mds_*.csv`, `v3_*.png`) |
 | `figuras_relatorio_v2.py` | figuras e `sensibilidade_v2.csv` (versão 2, MDT) |
