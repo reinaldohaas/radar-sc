@@ -12,8 +12,8 @@ Dados: 7 volumes do FTP da Defesa Civil de SC, de 16/11 23:58 a 19/11 23:36 UTC.
 
    | Antena 25 m acima do chão, mata de 15 m | Média, 30 km (0,5° / 1,4°) | Média, 60 km (0,5° / 1,4°) | Oeste, 30 km (0,5° / 1,4°) |
    |---|---|---|---|
-   | Atual, antena como está hoje (~3 m) | 42% / 28% | 47% / 31% | 87% / 74% |
-   | **Atual, com torre de 25 m** | **14% / 0%** | **32% / 7%** | **18% / 0%** |
+   | Atual, -28,93455, -49,36249, antena como está hoje (~3 m) | 42% / 28% | 47% / 31% | 87% / 74% |
+   | **Atual, -28,93455, -49,36249, com torre de 25 m** | **14% / 0%** | **32% / 7%** | **18% / 0%** |
    | Topo da colina a NW, -28,92524, -49,37070 | 15% / 0% | 33% / 8% | 19% / 0% |
    | Topo do Morro dos Conventos, -28,93725, -49,36762 | 14% / 0% | 32% / 8% | 17% / 0% |
    | Morro das Antenas, -28,84387, -49,39876 | 6% / 0% | 30% / 9% | 15% / 1% |
@@ -76,6 +76,8 @@ Método: bloqueio parcial do feixe (Bech et al., 2003), com Terra de raio efetiv
 - O mesmo MDT reduzido a 5 m, guardando o máximo de cada bloco (o lado seguro), no resto das três folhas.
 - SRTM de 30 m fora delas.
 
+As folhas 1:10.000 do SIGSC não declaram nodata e têm nas bordas uma moldura de 0 e −9999 m que se sobrepõe ~270 m à folha vizinha. Na primeira montagem, essa moldura aparecia como uma faixa de 0 m cortando o morro a −49,376° (emenda entre SH-22-X-B-IV-3-SO-D e SE-C). O mosaico agora usa o maior valor nas sobreposições, o que elimina a faixa. Refeitas as contas, nenhum número do relatório mudou: a faixa era um vale falso e ficava fora dos caminhos que bloqueiam o feixe.
+
 Mata e casas entram como altura somada ao terreno em terra firme. Os primeiros 100 m não entram: ali o feixe ainda está em campo próximo.
 
 **Calibração com os volumes observados:**
@@ -106,6 +108,15 @@ Cada prédio ocupa uma fração pequena de grau em azimute (20 m a 12 km dá 0,1
 ![Bloqueio simulado: posição atual e as duas alternativas](figuras/v2_pbb_posicoes.png)
 
 ## 5. Posições alternativas
+
+Posições estudadas (WGS84; chão pelo MDT do SIGSC; distância e azimute a partir do radar atual):
+
+| Posição | Latitude | Longitude | Chão no MDT | Distância / azimute |
+|---|---|---|---|---|
+| Atual (radar) | -28,934548 | -49,362490 | 67,8 m | — |
+| Topo da colina a NW | -28,925236 | -49,370698 | 67,2 m | 1,31 km / 322° |
+| Topo do Morro dos Conventos | -28,937250 | -49,367620 | 69,2 m | 0,58 km / 239° |
+| Morro das Antenas | -28,843869 | -49,398756 | 255,1 m | 10,66 km / 341° |
 
 Bloqueio médio, MDT + mata (sensibilidade completa em `sensibilidade_v2.csv` e `sensibilidade_colina.csv`):
 

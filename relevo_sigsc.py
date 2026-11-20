@@ -41,8 +41,10 @@ class Mosaico:
         self.crs = ds[0].crs
         nod = ds[0].nodata
         if res <= 1.5:
-            arr, self.transform = merge(ds, bounds=limites, res=res, nodata=np.nan if nod is None else nod,
-                                        resampling=Resampling.nearest, dtype="float32")
+            # As folhas não têm nodata declarado e trazem uma moldura de 0 e -9999 nas bordas, que se sobrepõe
+            # à folha vizinha (~270 m). Com method="max" o valor real da vizinha prevalece sobre a moldura.
+            arr, self.transform = merge(ds, bounds=limites, res=res, nodata=-9999.0 if nod is None else nod,
+                                        resampling=Resampling.nearest, dtype="float32", method="max")
             a = arr[0].astype("float32")
         else:
             # Máximo em blocos res x res, folha por folha (o rasterio não lê com Resampling.max)
