@@ -12,3 +12,6 @@ ftp_arvore.txt
 amostra_*.txt
 *.diagnostico.png
 amostras/
+
+# Tiles de relevo (cache)
+dem/
