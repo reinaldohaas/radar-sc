@@ -4,8 +4,10 @@
 Parte de um projeto exportado pelo próprio Earth Studio (modelo) e grava quadros-chave de:
   - posição da câmera (longitude, latitude, altitude);
   - ponto de interesse do efeito "Camera Target" (a câmera olha sempre para ele).
-Roteiro (90 s): chegada pelo mar → volta em torno do radar atual (feixes batendo na mata e no farol) →
-proposta 1, topo do Morro dos Conventos → proposta 2, Morro das Antenas → vista geral.
+Roteiro (130 s): chegada pelo mar → volta em torno do radar atual (feixes batendo na mata e no farol) →
+proposta 1, topo do Morro dos Conventos → proposta 2, Morro das Antenas → visadas do feixe de 0,5° até a
+Serra Geral (a câmera sobe atrás do radar, percorre a visada de 270° e varre os pontos onde o feixe toca o relevo,
+de 250° a 330°) → vista geral.
 
 No .esp os valores são relativos à faixa de cada atributo:
   longitude = −180 + 360·r; latitude = −90 + 180·r; altitude = mín + r·(máx − mín).
@@ -19,8 +21,11 @@ Uso:
 Saída: kml/radar_ararangua_voo.esp (fora do git).
 """
 import json
+import math
 import sys
 from pathlib import Path
+
+import numpy as np
 
 from simular_bloqueio import destino
 
@@ -30,7 +35,7 @@ ATUAL = (-28.934548, -49.362490, 67.8 + 3 + OFFSET)
 P1 = (-28.93725, -49.36762, 69.2 + 25 + OFFSET)
 P2 = (-28.843869, -49.398756, 255.1 + 25 + OFFSET)
 GERAL = (-28.885, -49.385, 150.0)
-SEGUNDOS = 90
+SEGUNDOS = 130
 FPS = 30
 
 
@@ -57,16 +62,38 @@ def volta(centro, raio, alt, t0, t1, az0, graus, n):
     return pts
 
 
+def toque(az, rel):
+    """Ponto onde o centro do feixe de 0,5° da posição atual (antena a 70,8 m) toca o relevo SRTM."""
+    Re = 8495e3
+    ds = np.arange(200, 80001, 250.0)
+    h = np.sqrt(ds ** 2 + Re ** 2 + 2 * ds * Re * math.sin(math.radians(0.5))) - Re + 70.8
+    la, lo = destino(ATUAL[0], ATUAL[1], float(az), ds)
+    zt = rel(la, lo, ds / 1000)
+    bate = np.flatnonzero(zt >= h)
+    k = int(bate[0]) if len(bate) else len(ds) - 1
+    return float(la[k]), float(lo[k]), float(h[k]) + OFFSET
+
+
 def roteiro():
-    """[(t, lat, lon, alt_camera, alvo)]"""
-    p = [(0.00, -28.990, -49.290, 2500, ATUAL),
-         (0.08, -28.950, -49.340, 700, ATUAL)]
-    p += volta(ATUAL, 900, 220, 0.12, 0.40, 135, 360, 12)            # radar atual: volta completa
-    p += volta(P1, 700, 230, 0.46, 0.60, 120, 180, 6)                # proposta 1: meia volta
-    p += [(0.66, -28.875, -49.360, 900, P2)]                         # a caminho da proposta 2
-    p += volta(P2, 1500, 650, 0.72, 0.90, 160, 240, 8)              # proposta 2: 2/3 de volta
-    p += [(1.00, -28.990, -49.300, 7000, GERAL)]
-    return p
+    """[(t, lat, lon, alt_camera, alvo)], t em segundos."""
+    from relevo import Relevo
+    rel = Relevo(ATUAL[0], ATUAL[1], fino_km=1.0, largo_km=110)
+    p = [(0, -28.990, -49.290, 2500, ATUAL),
+         (7, -28.950, -49.340, 700, ATUAL)]
+    p += volta(ATUAL, 900, 220, 11, 36, 135, 360, 12)                # radar atual: volta completa
+    p += volta(P1, 700, 230, 41, 54, 120, 180, 6)                    # proposta 1: meia volta
+    p += [(59, -28.875, -49.360, 900, P2)]                           # a caminho da proposta 2
+    p += volta(P2, 1500, 650, 65, 81, 160, 240, 8)                  # proposta 2: 2/3 de volta
+    # visadas até a Serra Geral
+    s270 = toque(270, rel)
+    p += [(88, -28.950, -49.250, 3500, s270)]                        # atrás do radar, sobre o mar, olhando para oeste
+    la, lo = destino(ATUAL[0], ATUAL[1], 270.0, 30000.0)
+    p += [(96, float(la), float(lo), 1800, s270)]                    # ao longo da visada de 270°
+    la, lo = destino(ATUAL[0], ATUAL[1], 90.0, 4000.0)
+    for k, az in enumerate(range(250, 331, 10)):                     # varredura dos pontos de toque
+        p.append((101 + 2.5 * k, float(la), float(lo), 2500, toque(az, rel)))
+    p += [(130, -29.060, -49.150, 14000, (-28.88, -49.62, 300.0))]
+    return [(t / SEGUNDOS, la, lo, h, a) for t, la, lo, h, a in p]
 
 
 def main():
@@ -74,7 +101,7 @@ def main():
     esp = json.loads(modelo.read_text(encoding="utf-8"))
     quadros = SEGUNDOS * FPS
     esp["settings"]["duration"] = quadros
-    esp["settings"]["name"] = "Radar Ararangua - posicoes propostas"
+    esp["settings"]["name"] = "Radar Ararangua - posicoes e visadas da Serra Geral"
     esp["playbackManager"]["range"] = {"start": 0, "end": quadros}
     cena = esp["scenes"][0]
     cena["duration"] = quadros

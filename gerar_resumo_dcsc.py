@@ -86,7 +86,7 @@ def main():
                             author="Dr. Reinaldo Haas", subject="Diagnóstico do radar meteorológico de Araranguá (SC)")
     s = []
     s += [P("Radar meteorológico de Araranguá", tit),
-          P("Diagnóstico dos dados, bloqueios do feixe e recomendações<br/>Resumo para a Defesa Civil de Santa Catarina — 20/11/2026<br/>Autor: Dr. Reinaldo Haas", sub),
+          P("Diagnóstico dos dados, bloqueios do feixe e recomendações<br/>Resumo para a Defesa Civil de Santa Catarina — 21/11/2026<br/>Autor: Dr. Reinaldo Haas", sub),
           Spacer(1, 10)]
 
     s += [P("1. Contexto", h1),
@@ -97,11 +97,14 @@ def main():
             "polarimétricas. O trabalho foi feito no âmbito do <b>Termo de Cooperação Técnica nº 007/SDC/2025</b> "
             "entre a SDC e a UFSC (acesso aos dados do radar via FTP; atividades 1.2 e 2.1 do Plano de Ação). "
             "O relatório técnico completo, com métodos, figuras e scripts, está no repositório "
-            "<i>github.com/reinaldohaas/radar-sc</i> (relatorio/RELATORIO_ARARANGUA.md).")]
+            "<i>github.com/reinaldohaas/radar-sc</i> (relatorio/RELATORIO_ARARANGUA.md)."),
+          P("<b>Período de observação.</b> O diagnóstico foi feito com poucos dias de dados (16 a 20/11/2026). "
+            "Os resultados indicam as causas e a ordem de grandeza de cada problema, mas devem ser confirmados com "
+            "um período mais longo, com situações de chuva variadas, e com vistoria no local.")]
 
     s += [P("2. Conclusão principal", h1),
-          P("<b>Os dados não são inconsistentes ao acaso.</b> Há um conjunto de causas identificadas que se somam. "
-            "Quase todas têm solução simples, por configuração e sem obra. "
+          P("Os dados não são inconsistentes ao acaso: há um conjunto de causas identificadas que se somam, e quase "
+            "todas têm solução por configuração, sem obra. "
             "O ponto que precisa de diagnóstico do fabricante é a <b>sensibilidade do radar</b>, que está muito abaixo "
             "do esperado para um radar de banda X. O bloqueio do feixe a oeste tem solução definitiva com uma "
             "<b>torre de 25 m no local atual</b>, sem necessidade de mudar o radar de lugar.", caixa)]
@@ -114,7 +117,7 @@ def main():
               "em mediana 44% dos raios com chuva a 0,5°, sobretudo nos setores norte e nordeste. Como os raios "
               "apagados mudam a cada volume, os produtos feitos com a refletividade filtrada mostram setores "
               "\"bloqueados\" que mudam de um dia para outro. O bloqueio real (relevo e mata) é fixo.",
-              "<b>Sensibilidade cerca de 25 a 35 dB abaixo do esperado.</b> A menor refletividade detectada é de "
+              "<b>Sensibilidade muito abaixo do esperado.</b> A menor refletividade detectada é de "
               "~30 dBZ a 20 km, ~38 dBZ a 40 km e ~48 dBZ a 80 km. Chuva fraca e estratiforme não aparece além de "
               "~20 km. Com sinal-ruído baixo, o RhoHV cai, o ZDR fica negativo e a fase diferencial fica ruidosa. "
               "A especificação publicada pelo fabricante para o protótipo de 100 W é de 18 dBZ a 50 km; este "
@@ -134,9 +137,9 @@ def main():
               "explicam setores estreitos sem eco e o aspecto de \"pente\" das imagens. Por ser móvel, o radar pode "
               "ser afastado desses obstáculos ou levado a um ponto mais alto sem obra civil grande.",
               "<b>Eco fixo a 268–271°</b> (planície, cidade de Araranguá e Serra Geral) visto por uma abertura na "
-              "mata. Os prédios de Araranguá (até ~40 m) causam clutter, mas bloqueiam no máximo ~13% do feixe.",
+              "mata.",
               "<b>Lacunas na transmissão:</b> em 8 horas de 20/11, faltaram volumes em 7 intervalos de mais de "
-              "15 min, somando 3 horas (37% do tempo). Também há erro nos metadados de posição e altitude.",
+              "15 min, somando 3 horas (37% do tempo).",
           ])]
 
     s += [KeepTogether([P("Exemplo: Laguna, 20/11/2026, 8–9 h", ParagraphStyle("h3", parent=h1, fontSize=10, spaceBefore=6)),
@@ -150,7 +153,7 @@ def main():
                  "08:57 de 20/11/2026, a 0,5° e 1,4°. Não há volumes entre 08:21 e 08:57.")]
 
     s += [KeepTogether([P("Investigação dos raios sem eco: 19/11/2026, 17:16 UTC", ParagraphStyle("h3b", parent=h1, fontSize=10, spaceBefore=6)),
-          P("Classificamos raio a raio um volume de 19/11, quando as imagens mostravam muitos setores sem eco. Dos 154 "
+          P("Foi classificado raio a raio um volume de 19/11, quando as imagens mostravam muitos setores sem eco. Dos 154 "
             "raios com chuva a 0,5°, 30 foram apagados pelo filtro de clutter, 21 estão sem eco onde a simulação "
             "prevê bloqueio pela mata (oeste e noroeste), 7 estão sem eco sem bloqueio simulado (obstáculos a menos de "
             "100 m da antena: farol, poste e fios) e 10 são sombras de atenuação atrás de células fortes. As faixas "
@@ -177,14 +180,12 @@ def main():
           tabela([
               ["Problema", "Solução", "Responsável", "Custo / prazo"],
               ["PRF 400/267 Hz: velocidade inútil, filtro apaga chuva", "Alterar para <b>1200/900 Hz</b> (Nyquist ~29 m/s, alcance 125 km)", "Fabricante / operador", "Baixo / imediato"],
-              ["Sensibilidade 25–35 dB abaixo do esperado", "Testar potência transmitida, compressão de pulso, perdas (guia, junta rotativa), ruído do receptor; recalibrar", "Fabricante", "<b>A definir pelo diagnóstico</b>"],
+              ["Sensibilidade 22–29 dB abaixo da especificação", "Testar potência transmitida, compressão de pulso, perdas (guia, junta rotativa), ruído do receptor; recalibrar", "Fabricante", "A definir pelo diagnóstico"],
               ["ZDR descalibrado", "Varredura vertical (birdbath) em chuva fraca", "Operador", "Baixo / imediato"],
-              ["Possível desvio de azimute (2–4°)", "Varredura do Sol", "Operador", "Baixo / imediato"],
               ["Zona cega de 2,2 km", "Ativar pulso curto de preenchimento, se disponível", "Fabricante", "Baixo"],
               ["Lacunas no FTP (37% do tempo em 8 h)", "Rever transmissão e envio dos volumes", "DCSC / TI", "Baixo / imediato"],
-              ["Metadados de posição e altitude", "Corrigir configuração do site (−28,934548; −49,362490; antena ~71 m)", "Operador", "Baixo / imediato"],
               ["Farol, poste e fios a poucos metros do radar móvel", "Afastar o reboque ≥ 50–100 m do farol, longe de fios; ou elevá-lo numa plataforma", "DCSC", "Baixo / semanas"],
-              ["Bloqueio a oeste por vegetação", "Poda até ~300 m da antena (paliativo, com licença ambiental); antena a <b>25 m</b> (torre ou plataforma) ou reboque num ponto alto (definitivo)", "DCSC", "Médio / meses"],
+              ["Bloqueio a oeste por vegetação", "Antena a 25 m (torre ou plataforma) ou reboque num ponto alto", "DCSC", "Médio / meses"],
           ], [4.4 * cm, 6.2 * cm, 2.8 * cm, 3.6 * cm])])]
 
     s += [P("5. Bloqueio do feixe e altura da antena", h1),
@@ -213,8 +214,7 @@ def main():
               "<b>Solicitar ao fabricante</b>: (a) alteração da PRF para 1200/900 Hz; (b) especificação de sensibilidade "
               "do equipamento (refletividade mínima a 1 km ou a 50 km) e teste de potência, compressão de pulso e "
               "ruído; (c) ativação do pulso de preenchimento da zona cega.",
-              "<b>Calibração</b>: varredura vertical para o ZDR e varredura do Sol para o azimute; correção dos "
-              "metadados do site.",
+              "<b>Calibração</b>: varredura vertical para o ZDR e varredura do Sol para o azimute.",
               "<b>Transmissão</b>: eliminar as lacunas de envio de volumes ao FTP.",
               "<b>Vistoria no local</b>: medir azimute e distância do farol, do poste e dos fios a partir da antena, "
               "e os obstáculos a menos de 300 m, para escolher onde reposicionar o reboque.",
