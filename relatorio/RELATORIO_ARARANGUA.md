@@ -33,7 +33,7 @@ A partir daí, o estudo passou a investigar a causa de cada defeito com os metad
 2. **Filtro de clutter apagando chuva.** O filtro Doppler depende dessa velocidade e remove raios inteiros de chuva: em mediana, 44% dos raios com chuva a 0,5°. É a principal causa do "pente" e dos setores sem eco que mudam de um dia para o outro (seção 3.1).
 3. **Sensibilidade muito abaixo da especificação.** O radar detecta só ~41 dBZ a 50 km, contra 18 dBZ especificados pelo fabricante para um protótipo de potência menor. A chuva fraca e moderada desaparece com a distância, e as variáveis polarimétricas ficam ruidosas (seção 2.2).
 4. **ZDR descalibrado** (negativo em chuva) e **zona cega saturada** de 2,2 km, sem o pulso de preenchimento previsto no projeto do equipamento (seções 2 e 4.2).
-5. **Antena baixa, num reboque, cercada de obstáculos:** o farol, a 15 m, bloqueia ~141–153° em todas as elevações; poste e fios da rede elétrica cruzam o feixe; a mata do Morro dos Conventos bloqueia a maior parte do feixe de 0,5° a oeste (seções 3.3 e 4).
+5. **Antena baixa, num reboque, cercada de obstáculos:** o farol, a 15 m, bloqueia ~141–153° em todas as elevações; poste e fios da rede elétrica cruzam o feixe; a mata do Morro dos Conventos bloqueia a maior parte do feixe de 0,5° a oeste (seções 3.4 e 4).
 6. **Atenuação em banda X e radome molhado,** que apagam o que fica atrás das células fortes e reduzem o sinal quando chove sobre o radar (seção 3.1).
 7. **Volumes ausentes no FTP:** em 8 h de 20/11, 7 lacunas de mais de 15 min somaram 3 h (37% do tempo).
 
@@ -177,7 +177,20 @@ O filtro de clutter é o principal responsável: como a velocidade é aleatória
 
 As faixas radiais a noroeste e ao norte são chuva vista só nos raios que passam pelos vãos da mata e dos obstáculos próximos; os vizinhos são bloqueados ou apagados pelo filtro. Os raios sem eco e sem bloqueio simulado indicam obstáculos a menos de 100 m da antena, que a simulação não alcança.
 
-### 3.3 O local da antena
+### 3.3 Interferência de rádio
+
+O radar opera em ~9,4 GHz. Wi-Fi (2,4, 5 e 6 GHz) não interfere nessa faixa. Os candidatos em banda X são os radares de navegação de barcos (9,3–9,5 GHz), relevantes para um radar na costa, outros radares de banda X e enlaces de micro-ondas. Uma interferência aparece como um raio estreito com eco em todo o alcance, inclusive em céu claro, com dBZ que sobe com a distância (a potência recebida é constante), RhoHV baixo e, no caso de barcos, mudando de azimute entre volumes.
+
+Foram examinados todos os raios das 5 elevações em 52 volumes de 16 a 20/11, procurando raios com eco em mais da metade do trecho de 40 a 118 km e vizinhos (±3–5°) vazios. Não há interferência:
+
+- O raio de 349,5° a 0,5° aparece em quase todos os volumes, mas o eco vai de 10 a ~80 km e para; a 1,4°, só aparece entre 60 e 80 km, na Serra Geral, e o RhoHV é de 0,3–0,6. É eco de terreno visto por uma abertura na mata, como o de 268–271°.
+- Os demais candidatos aparecem uma vez cada: são chuva (RhoHV 0,85–0,9) ou trechos de áreas de chuva com falhas ao longo do raio e o mesmo padrão nos raios vizinhos. Nenhum forma uma linha contínua até o fim do alcance.
+
+O raio de 349,5° também mostra a perda no radome molhado: em 20/11, das 11:06 às 11:57 UTC, com chuva forte sobre o radar, o eco de terreno desaparece além de 30 km nesse raio e nos vizinhos.
+
+O teste tem limites. Com a sensibilidade 22–29 dB abaixo da especificação (seção 2.2), uma interferência fraca fica abaixo do ruído. Radares de barco são intermitentes, e 52 volumes em 5 dias podem não registrá-los. O teste definitivo é uma varredura só de recepção, com o transmissor desligado, feita pelo fabricante ou pelo operador.
+
+### 3.4 O local da antena
 
 Uma foto do local mostra que o radar é uma unidade móvel: o radome está sobre um reboque, com a antena a ~3–4 m do chão, o que confirma a calibração da simulação. O farol está a ~15 m, a 147°; com ~3 m de diâmetro e ~15 m de altura, ocupa ~12° de azimute (~141–153°) até ~35–45° de elevação e bloqueia esse setor em todas as elevações. Um poste e fios da rede elétrica passam ao lado do radome e são os candidatos para os setores 321–324° e 352–356°. A mata em volta tem a altura do radome ou mais.
 
@@ -314,7 +327,7 @@ Mesmo com a antena livre da mata, a 0,5° o radar só vê até ~50–60 km a oes
 
 1. Pedir ao fabricante a mudança da PRF para 1200/900 Hz e a ativação do pulso de preenchimento.
 2. Pedir ao fabricante a verificação da sensibilidade: potência transmitida, compressão de pulso, perdas, ruído do receptor e constante de calibração.
-3. Calibrar o ZDR por varredura vertical e conferir o alinhamento em azimute por varredura do Sol.
+3. Calibrar o ZDR por varredura vertical, conferir o alinhamento em azimute por varredura do Sol e fazer uma varredura só de recepção, com o transmissor desligado, para descartar interferência.
 4. Vistoria no local: medir a posição do poste e dos fios e fotografar os setores 260–300°, 321–324° e 352–356° a partir da antena.
 5. Afastar o reboque do farol e da rede elétrica e, em seguida, decidir entre a torre de 25 m no Morro dos Conventos e a de 30–35 m no Morro das Antenas.
 6. Repetir o diagnóstico com algumas semanas de dados depois dos itens 1–3, incluindo a medida do bloqueio real pelo ΦDP.
@@ -331,6 +344,7 @@ Scripts em `radar-sc/`:
 | `analise_mds.py` | calibração com o MDS, setores e prédios |
 | `analise_polarimetrica.py` | autoconsistência Z–ΦDP, ZDR e sensibilidade por distância |
 | `setores_por_volume.py`, `raios_bloqueados.py` | raios apagados pelo filtro, sombras de atenuação e classificação raio a raio |
+| `verificar_interferencia.py` | busca de raios de interferência de rádio |
 | `figura_polarimetria_volume.py`, `figura_laguna.py`, `chuva_ponto.py` | polarimetria de um volume; exemplo de Laguna; chuva num ponto |
 | `posicoes_obstaculos.py`, `figuras_posicoes_latlon.py`, `mapa3d_serra_geral.py` | posições, obstáculos, bloqueio por posição e mapas 3D |
 | `gerar_kmz_3d.py`, `gerar_esp_earth_studio.py` | modelo 3D e visadas para o Google Earth; projeto do Google Earth Studio |
