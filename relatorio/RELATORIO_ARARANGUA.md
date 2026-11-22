@@ -189,6 +189,8 @@ Método: bloqueio parcial do feixe (Bech et al., 2003), Terra de raio efetivo 4/
 
 ![Altura da mata e das construções (MDS − MDT)](figuras/v3_altura_superficie.png)
 
+As manchas altas a sudoeste do Morro dos Conventos, centradas em -28,9411, -49,3701, não são morros nem erro do SIGSC. O terreno (MDT) ali é uma encosta lisa, de 29 a 48 m. As manchas são copas de árvores de 20–30 m, chegando a 32 m. A imagem de satélite atual mostra mata densa no mesmo lugar, entre casas, possivelmente pinus ou eucalipto. Essa mata fica a ~1 km do radar, a 225–235°, e o topo das copas, a 65–72 m de altitude, chega à altura da antena atual (~71 m), por isso bloqueia parte do setor sudoeste. Na proposta 1 ela fica a ~400–500 m, e a antena numa torre de 25 m (~94 m) passa acima das copas.
+
 O levantamento é anterior ao radar, e a mata cresceu desde então. A calibração com os volumes observados testou crescimentos de 0, 3 e 6 m:
 
 | Superfície | Oeste a 30 km, simulado (0,5° / 1,4° / 2,4°) | Correlação com a falta de eco (0,5° / 1,4° / 2,4°) |
@@ -269,6 +271,7 @@ Bloqueio simulado (MDS + 6 m de mata):
 | 5 | Mata do topo do Morro dos Conventos | -28,937250 | -49,367620 | ~5–10 m | 583 m / 239° |
 | 6 | Morro com mata a oeste | -28,939924 | -49,471553 | ~15 m | 10,65 km / 267° |
 | 7 | Torres e mata do Morro das Antenas | em volta da proposta 2 | | até ~21 m | 250 m a NNE da proposta 2 |
+| 8 | Mata alta a SW do Morro dos Conventos | -28,941068 | -49,370137 | 20–32 m | 1,04 km / 226° |
 
 | Posição | 0,5°, média a 10 / 30 / 60 km | 0,5°, oeste a 30 / 60 km | 1,4°, média a 30 / 60 km | Raios ≥ 50% bloqueados a 30 km (0,5° / 1,4°) |
 |---|---|---|---|---|
